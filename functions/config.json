@@ -1,0 +1,19 @@
+{
+	"app_name": "diaexpress",
+	"app_description": "application de transport logistique et suivi de colis",
+	"app_identifier": "com.dia.app",
+	"ios_app_version": "1.0.0",
+	"android_app_version": "100",
+	"firebaseProjectId": "diaapp-bb143",
+	"googleApiKeys": {
+		"ios": "AIzaSyCAH0ck1U8MO4z6Xn7_d3RnaltCSfRUvWE",
+		"android": "AIzaSyDWAZXKPmlMHVdMwCS0EpS-38i2tjR314Y",
+		"web": "AIzaSyCPjFn1T33QfGaWylAzPyFZlhHx8n4jbQg",
+		"server": "AIzaSyDWAZXKPmlMHVdMwCS0EpS-38i2tjR314Y"
+	},
+	"expo_owner": "Christodule",
+	"expo_slug": "dia",
+	"expo_project_id": "169af00e-a79a-4ea7-82f9-b068177df076",
+	"admin_email": "diaexpressofficial@gmail.com",
+	"purchase_code": "cb772947-12ab-4539-ab65-b9b298f2ac05"
+}
