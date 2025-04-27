@@ -1,0 +1,24 @@
+name: Deploy to Firebase Hosting on merge
+
+'on':
+  push:
+    branches:
+      - main  # ou master selon ton branche
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - run: npm install -g yarn
+    - run: yarn install
+    - run: yarn web:build # ta commande pour builder ton app React
+
+    - uses: FirebaseExtended/action-hosting-deploy@v0
+      with:
+        repoToken: "${{ secrets.FIREBASE_TOKEN }}"
+        firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_DIAAPP_BB143 }}"
+        channelId: live
+        projectId: diaapp-bb143
