@@ -3,7 +3,7 @@ import MaterialTable from "material-table";
 import { Typography, Grid, Card } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import { useTranslation } from "react-i18next";
-import moment from "moment/min/moment-with-locales";
+import moment from "moment";
 import { colors } from "../components/Theme/WebTheme";
 import { useNavigate,useLocation } from "react-router-dom";
 import { FONT_FAMILY, MAIN_COLOR, SECONDORY_COLOR } from "../common/sharedFunctions";

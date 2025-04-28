@@ -14,7 +14,7 @@ import i18n from 'i18n-js';
 import { Button } from 'react-native-elements'
 import { useSelector, useDispatch } from "react-redux";
 var { width } = Dimensions.get('window');
-import moment from 'moment/min/moment-with-locales';
+import moment from 'moment';
 import { api } from 'common';
 import { MAIN_COLOR } from "../common/sharedFunctions";
 import {SECONDORY_COLOR } from "../common/sharedFunctions";

@@ -11,7 +11,7 @@ import { Typography  } from "@mui/material";
 import AlertDialog from "../components/AlertDialog";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import Switch from "@mui/material/Switch";
-import moment from 'moment/min/moment-with-locales';
+import moment from 'moment';
 import {MAIN_COLOR,SECONDORY_COLOR} from "../common/sharedFunctions"
 import EditIcon from '@mui/icons-material/Edit';
 import { ThemeProvider } from '@mui/material/styles';

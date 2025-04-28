@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 import SegmentedControlTab from 'react-native-segmented-control-tab';
 import { MAIN_COLOR } from '../common/sharedFunctions';
 var { width, height } = Dimensions.get('window');
-import moment from 'moment/min/moment-with-locales';
+import moment from 'moment';
 import { fonts } from '../common/font';
 import { Ionicons, AntDesign, Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 

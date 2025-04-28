@@ -24,6 +24,10 @@ const databaseURL = admin.app().options.databaseURL;
 
 setGlobalOptions({ region: databaseURL.split(".").length===4?databaseURL.split(".")[1]:"us-central1" });
 
+
+var methods = [];
+
+/*
 var methods = [
   "braintree",
   "culqi",
@@ -46,7 +50,7 @@ var methods = [
   "test",
   "xendit",
   "tap",
-];
+];*/
 
 for (let i = 0; i < methods.length; i++) {
   exports[methods[i]] = require(`./providers/${methods[i]}`);

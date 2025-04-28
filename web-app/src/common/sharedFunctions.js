@@ -1,5 +1,5 @@
 import React from 'react';
-import moment from 'moment/min/moment-with-locales';
+import moment from 'moment';
 import { colors } from "../components/Theme/WebTheme";
 import {
   Typography,

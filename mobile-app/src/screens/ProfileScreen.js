@@ -25,7 +25,7 @@ import { api, FirebaseContext } from 'common';
 import StarRating from 'react-native-star-rating-widget';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import RNPickerSelect from '../components/RNPickerSelect';
-import moment from 'moment/min/moment-with-locales';
+import moment from 'moment';
 import { MaterialIcons, Ionicons, Entypo, MaterialCommunityIcons, Feather, AntDesign } from '@expo/vector-icons';
 import { MAIN_COLOR } from '../common/sharedFunctions';
 import Dialog from "react-native-dialog";

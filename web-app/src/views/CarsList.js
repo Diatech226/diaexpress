@@ -12,7 +12,7 @@ import AlertDialog from "../components/AlertDialog";
 import CircularProgress from "@mui/material/CircularProgress";
 import Tooltip from "@mui/material/Tooltip";
 import { colors } from "../components/Theme/WebTheme";
-import moment from "moment/min/moment-with-locales";
+import moment from "moment";
 import Switch from "@mui/material/Switch";
 import { useNavigate,useLocation } from "react-router-dom";
 import EditIcon from '@mui/icons-material/Edit';

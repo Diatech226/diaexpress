@@ -15,7 +15,7 @@ import { makeStyles } from '@mui/styles';
 import { useSelector, useDispatch } from "react-redux";
 import { api } from 'common';
 import { useTranslation } from "react-i18next";
-import moment from 'moment/min/moment-with-locales';
+import moment from 'moment';
 import WalletCard from '../components/WalletCard';
 import AlertDialog from '../components/AlertDialog';
 import AlertDialogTwoButton from '../components/AlertDialogTwoButton';

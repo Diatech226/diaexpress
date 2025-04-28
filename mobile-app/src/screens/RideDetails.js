@@ -22,7 +22,7 @@ import StarRating from 'react-native-star-rating-widget';
 import { useSelector } from 'react-redux';
 import { Ionicons, Entypo, Fontisto, AntDesign, Octicons, Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { appConsts } from '../common/sharedFunctions';
-import moment from 'moment/min/moment-with-locales';
+import moment from 'moment';
 var { width, height } = Dimensions.get('window');
 import Button from '../components/Button';
 import { MAIN_COLOR } from '../common/sharedFunctions';

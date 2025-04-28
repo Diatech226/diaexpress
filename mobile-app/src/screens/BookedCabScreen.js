@@ -27,7 +27,7 @@ import * as DecodePolyLine from '@mapbox/polyline';
 import carImageIcon from '../../assets/images/track_Car.png';
 import { api } from 'common';
 import * as ImagePicker from 'expo-image-picker';
-import moment from 'moment/min/moment-with-locales';
+import moment from 'moment';
 import { CommonActions } from '@react-navigation/native';
 import { appConsts, MAIN_COLOR, SECONDORY_COLOR } from '../common/sharedFunctions';
 import { Ionicons } from '@expo/vector-icons';

@@ -6,7 +6,7 @@ import CircularLoading from "../components/CircularLoading";
 import { api } from 'common';
 import { useTranslation } from "react-i18next";
 import { colors } from '../components/Theme/WebTheme';
-import moment from 'moment/min/moment-with-locales';
+import moment from 'moment';
 import { SECONDORY_COLOR } from "../common/sharedFunctions";
 import { ThemeProvider } from '@mui/material/styles';
 import theme from "styles/tableStyle";

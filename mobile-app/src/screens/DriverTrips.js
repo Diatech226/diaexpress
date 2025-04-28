@@ -7,7 +7,7 @@ import i18n from 'i18n-js';
 import { useDispatch, useSelector } from 'react-redux';
 import { api } from 'common';
 import { Alert } from 'react-native';
-import moment from 'moment/min/moment-with-locales';
+import moment from 'moment';
 import carImageIcon from '../../assets/images/track_Car.png';
 var { width, height } = Dimensions.get('window');
 import { CommonActions } from '@react-navigation/native';

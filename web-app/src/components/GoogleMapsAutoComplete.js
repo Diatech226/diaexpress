@@ -9,7 +9,6 @@ import { makeStyles } from '@mui/styles';
 import throttle from 'lodash/throttle';
 import { geocodeByPlaceId } from 'react-places-autocomplete';
 import { useTranslation } from "react-i18next";
-import { useSelector } from "react-redux";
 
 import { MAIN_COLOR, FONT_FAMILY } from "../common/sharedFunctions";
 import { api } from 'common';
@@ -49,7 +48,6 @@ export default function GoogleMapsAutoComplete(props) {
   const [options, setOptions] = useState([]);
   const { t, i18n } = useTranslation();
   const isRTL = i18n.dir() === 'rtl';
-  const settingsdata = useSelector(state => state.settingsdata);
   const {
     fetchPlacesAutocomplete
   } = api;

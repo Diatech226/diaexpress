@@ -25,7 +25,7 @@ import * as Crypto from "expo-crypto";
 import i18n from 'i18n-js';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Feather, Ionicons } from '@expo/vector-icons';
-import moment from 'moment/min/moment-with-locales';
+import moment from 'moment';
 import rnauth from '@react-native-firebase/auth';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 var { width,height } = Dimensions.get('window');

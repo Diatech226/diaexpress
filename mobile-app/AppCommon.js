@@ -8,7 +8,7 @@ import i18n from 'i18n-js';
 import { colors } from './src/common/theme';
 import GetPushToken from './src/components/GetPushToken';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import moment from 'moment/min/moment-with-locales';
+import moment from 'moment';
 import {
   AuthLoadingScreen,
 } from './src/screens';

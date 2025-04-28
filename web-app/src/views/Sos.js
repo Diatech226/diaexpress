@@ -4,7 +4,7 @@ import MaterialTable from "material-table";
 import CircularLoading from "../components/CircularLoading";
 import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
-import moment from 'moment/min/moment-with-locales';
+import moment from 'moment';
 import {colors} from '../components/Theme/WebTheme';
 import {SECONDORY_COLOR} from "../common/sharedFunctions"
 import { ThemeProvider } from '@mui/material/styles';

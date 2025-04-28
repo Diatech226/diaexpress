@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import CircularLoading from "../components/CircularLoading";
 import { api } from 'common';
 import { useTranslation } from "react-i18next";
-import moment from 'moment/min/moment-with-locales';
+import moment from 'moment';
 import {colors} from '../components/Theme/WebTheme';
 import {Switch} from '@mui/material';
 import { SECONDORY_COLOR } from "../common/sharedFunctions";

@@ -4,7 +4,7 @@ import { colors } from '../common/theme';
 import i18n from 'i18n-js';
 import { useSelector } from 'react-redux';
 import SegmentedControlTab from 'react-native-segmented-control-tab';
-import moment from 'moment/min/moment-with-locales';
+import moment from 'moment';
 import { MAIN_COLOR } from '../common/sharedFunctions';
 var { width, height } = Dimensions.get('window');
 import { Ionicons, Entypo, Fontisto, AntDesign, Octicons, Feather, MaterialCommunityIcons } from '@expo/vector-icons';

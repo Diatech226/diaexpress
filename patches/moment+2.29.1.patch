@@ -1,7 +1,7 @@
-diff --git a/node_modules/moment/min/moment-with-locales.js b/node_modules/moment/min/moment-with-locales.js
+diff --git a/node_modules/moment.js b/node_modules/moment.js
 index 4e0b8d9..6fe0813 100644
---- a/node_modules/moment/min/moment-with-locales.js
-+++ b/node_modules/moment/min/moment-with-locales.js
+--- a/node_modules/moment.js
++++ b/node_modules/moment.js
 @@ -2083,7 +2083,7 @@
              try {
                  oldLocale = globalLocale._abbr;

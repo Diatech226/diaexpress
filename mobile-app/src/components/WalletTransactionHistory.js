@@ -4,7 +4,7 @@ import { Icon } from 'react-native-elements'
 import { colors } from '../common/theme';
 import i18n from 'i18n-js';
 import { useSelector } from 'react-redux';
-import moment from 'moment/min/moment-with-locales';
+import moment from 'moment';
 import SegmentedControlTab from 'react-native-segmented-control-tab';
 import { MAIN_COLOR,SECONDORY_COLOR } from '../common/sharedFunctions';
 import { fonts } from '../common/font';
