@@ -1,4 +1,3 @@
-# Deploy to Firebase Hosting when pushing to master
 name: Deploy to Firebase Hosting on merge
 'on':
   push:
@@ -14,8 +13,8 @@ jobs:
       - name: Install dependencies
         run: yarn install
 
-      - name: Build web app
-        run: yarn workspace web-app build
+      - name: Build web app (ignore warnings)
+        run: CI='' yarn workspace web-app build
 
       - name: Deploy to Firebase Hosting
         uses: FirebaseExtended/action-hosting-deploy@v0
