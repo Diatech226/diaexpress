@@ -12,7 +12,7 @@
     "app:build-dev-client": "cd mobile-app && eas build --profile development",
     "app:submit": "cd mobile-app && eas submit",
     "web": "yarn workspace web-app start",
-    "web:deploy": "yarn workspace web-app build && firebase deploy",
+    "web:deploy": "yarn workspace web-app build && firebase deploy --only hosting",
     "deploy": "yarn workspace web-app build && firebase deploy && exicube initialize"
     
   },
