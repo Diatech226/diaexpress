@@ -2,6 +2,7 @@
   "name": "exicubeapps",
   "version": "4.6.0",
   "description": "Exicube App Solutions",
+
   "scripts": {
     "app": "yarn workspace mobile-app start",
     "app:publish": "cd mobile-app && eas update",

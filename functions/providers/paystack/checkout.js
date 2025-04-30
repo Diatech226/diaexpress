@@ -44,19 +44,19 @@ module.exports.render_checkout = async function(request, response) {
     },
     body: JSON.stringify(data),
   })
-    .then((res) => res.json())
-    .then((json) => {
-      if (json.data && json.status && json.data.authorization_url) {
-        response.redirect(json.data.authorization_url);
-      } else {
+      .then((res) => res.json())
+      .then((json) => {
+        if (json.data && json.status && json.data.authorization_url) {
+          response.redirect(json.data.authorization_url);
+        } else {
+          response.redirect("/cancel");
+        }
+        return true;
+      })
+      .catch((error)=>{
+        console.log(error);
         response.redirect("/cancel");
-      }
-      return true;
-    })
-    .catch((error)=>{
-      console.log(error);
-      response.redirect("/cancel");
-    });
+      });
 };
 
 module.exports.process_checkout = async function(req, res) {

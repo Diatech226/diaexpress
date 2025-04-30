@@ -115,7 +115,7 @@ module.exports.process_checkout = async function(request, response) {
     admin.database().ref("iyzico").child(order_id).once("value", (iyzicosnap) => {
       const token = iyzicosnap.val();
       if (token && token.length>10) {
-        iyzipay.checkoutForm.retrieve({ token: token }, (error, result) => {
+        iyzipay.checkoutForm.retrieve({token: token}, (error, result) => {
           console.log(error, result);
           if (error) {
             response.redirect("/cancel");

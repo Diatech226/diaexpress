@@ -1,18 +1,18 @@
 const fetch = require("node-fetch");
 const admin = require("firebase-admin");
 
-const RequestPushMsg = async(token, data) => {
+const RequestPushMsg = async (token, data) => {
   const savePushMsg = (token, data) => {
     admin.database().ref("/users").orderByChild("pushToken").equalTo(token).once("value", (udata) => {
       const users = udata.val();
       if (users) {
         for (const ukey in users) {
           admin.database().ref("/userNotifications/" + ukey).push(
-            {
-              dated: new Date().getTime(),
-              title: data.title,
-              msg: data.msg,
-            },
+              {
+                dated: new Date().getTime(),
+                title: data.title,
+                msg: data.msg,
+              },
           );
         }
       }
@@ -57,7 +57,7 @@ const RequestPushMsg = async(token, data) => {
 
 module.exports.RequestPushMsg = RequestPushMsg;
 
-const addToWallet = async(uid, amount, description, transaction_id) =>{
+const addToWallet = async (uid, amount, description, transaction_id) =>{
   const snapshot = await admin.database().ref("users/" + uid).once("value");
   if (snapshot.val()) {
     const pushToken = snapshot.val().pushToken;
@@ -75,12 +75,12 @@ const addToWallet = async(uid, amount, description, transaction_id) =>{
     if (pushToken) {
       const language = Object.values((await admin.database().ref("languages").orderByChild("default").equalTo(true).once("value")).val())[0].keyValuePairs;
       RequestPushMsg(
-        pushToken,
-        {
-          title: language.notification_title,
-          msg: language.wallet_updated,
-          screen: "Wallet",
-        },
+          pushToken,
+          {
+            title: language.notification_title,
+            msg: language.wallet_updated,
+            screen: "Wallet",
+          },
       );
     }
     return true;
@@ -91,7 +91,7 @@ const addToWallet = async(uid, amount, description, transaction_id) =>{
 
 module.exports.addToWallet = addToWallet;
 
-const deductFromWallet = async(uid, amount, description) =>{
+const deductFromWallet = async (uid, amount, description) =>{
   const snapshot = await admin.database().ref("users/" + uid).once("value");
   if (snapshot.val()) {
     const pushToken = snapshot.val().pushToken;
@@ -109,12 +109,12 @@ const deductFromWallet = async(uid, amount, description) =>{
     if (pushToken) {
       const language = Object.values((await admin.database().ref("languages").orderByChild("default").equalTo(true).once("value")).val())[0].keyValuePairs;
       RequestPushMsg(
-        pushToken,
-        {
-          title: language.notification_title,
-          msg: language.wallet_updated,
-          screen: "Wallet",
-        },
+          pushToken,
+          {
+            title: language.notification_title,
+            msg: language.wallet_updated,
+            screen: "Wallet",
+          },
       );
     }
     return true;

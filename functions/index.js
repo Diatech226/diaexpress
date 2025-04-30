@@ -1,7 +1,7 @@
 /* eslint no-loop-func: "off"*/
-const { onValueCreated, onValueDeleted, onValueUpdated } = require("firebase-functions/v2/database");
-const { onRequest } = require("firebase-functions/v2/https");
-const { onSchedule } = require("firebase-functions/v2/scheduler");
+const {onValueCreated, onValueDeleted, onValueUpdated} = require("firebase-functions/v2/database");
+const {onRequest} = require("firebase-functions/v2/https");
+const {onSchedule} = require("firebase-functions/v2/scheduler");
 const admin = require("firebase-admin");
 const nodemailer = require("nodemailer");
 const rgf = require("regularusedfunctions");
@@ -13,50 +13,33 @@ const config = require("./config.json");
 const addEstimate = require("./common/sharedFunctions").addEstimate;
 const translate = require("@iamtraction/google-translate");
 const appcat = require("./appcat.js");
-const { getDatabase } = require("firebase-admin/database");
-const { getAuth } = require("firebase-admin/auth");
+const {getDatabase} = require("firebase-admin/database");
+const {getAuth} = require("firebase-admin/auth");
 const functions = require("firebase-functions/v2");
-const { setGlobalOptions } = require("firebase-functions/v2");
+const {setGlobalOptions} = require("firebase-functions/v2");
 
 admin.initializeApp();
 
 const databaseURL = admin.app().options.databaseURL;
 
-setGlobalOptions({ region: databaseURL.split(".").length===4?databaseURL.split(".")[1]:"us-central1" });
+setGlobalOptions({region: databaseURL.split(".").length===4?databaseURL.split(".")[1]:"us-central1"});
 
 
-var methods = [];
-
-/*
 var methods = [
-  "braintree",
-  "culqi",
-  "flutterwave",
-  "liqpay",
-  "mercadopago",
-  "payfast",
+ 
   "paypal",
-  "paystack",
-  "paytm",
-  "payulatam",
-  "securepay",
+  
   "stripe",
-  "squareup",
-  "wipay",
-  "razorpay",
-  "paymongo",
-  "iyzico",
-  "slickpay",
+  
   "test",
-  "xendit",
-  "tap",
-];*/
+ 
+];
 
 for (let i = 0; i < methods.length; i++) {
   exports[methods[i]] = require(`./providers/${methods[i]}`);
 }
 
-exports.get_providers = onRequest(async(request, response) => {
+exports.get_providers = onRequest(async (request, response) => {
   response.set("Access-Control-Allow-Origin", "*");
   response.set("Access-Control-Allow-Headers", "Content-Type");
   const db = getDatabase();
@@ -80,7 +63,7 @@ exports.get_providers = onRequest(async(request, response) => {
   });
 });
 
-exports.googleapi = onRequest(async(request, response) => {
+exports.googleapi = onRequest(async (request, response) => {
   response.set("Access-Control-Allow-Origin", "*");
   response.set("Access-Control-Allow-Headers", "Content-Type");
   const db = getDatabase();
@@ -97,7 +80,7 @@ exports.googleapi = onRequest(async(request, response) => {
     const blockdata = await db.ref("blocklist").once("value");
     const blocklist = blockdata.val();
     if (blocklist && blocklist[ip]) {
-      response.send({ success: false });
+      response.send({success: false});
       return;
     }
     const day = new Date().getFullYear() + "-" + new Date().getMonth() + "-" + new Date().getDate();
@@ -107,7 +90,7 @@ exports.googleapi = onRequest(async(request, response) => {
   response.send(json);
 });
 
-exports.success = onRequest(async(request, response) => {
+exports.success = onRequest(async (request, response) => {
   const db = getDatabase();
   const language = Object.values((await db.ref("languages").orderByChild("default").equalTo(true).once("value")).val())[0].keyValuePairs;
   const amount_line = request.query.amount ? `<h3>${language.payment_of}<strong>${request.query.amount}</strong>${language.was_successful}</h3>` : "";
@@ -146,7 +129,7 @@ exports.success = onRequest(async(request, response) => {
     `);
 });
 
-exports.cancel = onRequest(async(request, response) => {
+exports.cancel = onRequest(async (request, response) => {
   const db = getDatabase();
   const language = Object.values((await db.ref("languages").orderByChild("default").equalTo(true).once("value")).val())[0].keyValuePairs;
   response.send(`
@@ -180,106 +163,106 @@ exports.cancel = onRequest(async(request, response) => {
 });
 
 exports.updateBooking = onValueUpdated(
-  {
-    ref: "/bookings/{bookingId}",
-  }, async(event) =>{
-    const db = getDatabase();
-    const oldrow = event.data.before.val();
-    const booking = event.data.after.val();
-    const langSnap = await db.ref("languages").orderByChild("default").equalTo(true).once("value");
-    const language = Object.values(langSnap.val())[0].keyValuePairs;
-    booking.key = event.params.bookingId;
+    {
+      ref: "/bookings/{bookingId}",
+    }, async (event) =>{
+      const db = getDatabase();
+      const oldrow = event.data.before.val();
+      const booking = event.data.after.val();
+      const langSnap = await db.ref("languages").orderByChild("default").equalTo(true).once("value");
+      const language = Object.values(langSnap.val())[0].keyValuePairs;
+      booking.key = event.params.bookingId;
 
-    if (!booking.bookLater && oldrow.status === "PAYMENT_PENDING" && booking.status === "NEW" && !booking.requestedDrivers && booking.preRequestedDrivers) {
-      db.ref("bookings").child(booking.key).update({
-        requestedDrivers: booking.preRequestedDrivers,
-        preRequestedDrivers: {},
-      });
-      Object.keys(booking.preRequestedDrivers).map(async(key)=>{
-        const snapshot = await db.ref("users/" + key).once("value");
-        const driver = snapshot.val();
-        if (driver.pushToken) {
-          RequestPushMsg(
-            driver.pushToken,
-            {
-              title: language.notification_title,
-              msg: language.new_booking_notification,
-              screen: "DriverTrips",
-            },
-          );
-        }
-      });
-    }
-
-    if (oldrow.status !== booking.status && booking.status === "CANCELLED") {
-      if (booking.customer_paid && parseFloat(booking.customer_paid) > 0 && booking.payment_mode!=="cash") {
-        addToWallet(booking.customer, parseFloat(booking.customer_paid), "Admin Credit", null);
-      }
-      if (booking.booking_from_web && booking.payment_mode!=="cash" && appcat && appcat === "bidcab") {
-        addToWallet(booking.customer, parseFloat(booking.payableAmount), "Admin Credit", null);
-      }
-      if (oldrow.status === "ACCEPTED" && booking.cancelledBy === "customer") {
-        db.ref("tracking/" + booking.key).orderByChild("status").equalTo("ACCEPTED").once("value", (sdata) => {
-          const items = sdata.val();
-          if (items) {
-            let accTime;
-            for (const skey in items) {
-              accTime = new Date(items[skey].at);
-              break;
-            }
-            const date1 = new Date();
-            const date2 = new Date(accTime);
-            const diffTime = date1 - date2;
-            const diffMins = diffTime / (1000 * 60);
-            db.ref("cartypes").once("value", async(cardata) => {
-              const cars = cardata.val();
-              let cancelSlab = null;
-              for (const ckey in cars) {
-                if (booking.carType === cars[ckey].name) {
-                  cancelSlab = cars[ckey].cancelSlab;
-                }
-              }
-              let deductValue = 0;
-              if (cancelSlab) {
-                for (let i = 0; i < cancelSlab.length; i++) {
-                  if (diffMins > parseFloat(cancelSlab[i].minsDelayed)) {
-                    deductValue = cancelSlab[i].amount;
-                  }
-                }
-              }
-              if (deductValue > 0) {
-                await db.ref("bookings/" + booking.key + "/cancellationFee").set(deductValue);
-                deductFromWallet(booking.customer, deductValue, "Cancellation Fee");
-                addToWallet(booking.driver, deductValue, "Cancellation Fee", null);
-              }
-            });
+      if (!booking.bookLater && oldrow.status === "PAYMENT_PENDING" && booking.status === "NEW" && !booking.requestedDrivers && booking.preRequestedDrivers) {
+        db.ref("bookings").child(booking.key).update({
+          requestedDrivers: booking.preRequestedDrivers,
+          preRequestedDrivers: {},
+        });
+        Object.keys(booking.preRequestedDrivers).map(async (key)=>{
+          const snapshot = await db.ref("users/" + key).once("value");
+          const driver = snapshot.val();
+          if (driver.pushToken) {
+            RequestPushMsg(
+                driver.pushToken,
+                {
+                  title: language.notification_title,
+                  msg: language.new_booking_notification,
+                  screen: "DriverTrips",
+                },
+            );
           }
         });
       }
-    }
-    if (booking.status === "COMPLETE" && booking.tipamount &&booking.tipamount>0) {
-      addToWallet(booking.driver, booking.tipamount, "Tip", booking.id);
-      deductFromWallet(booking.customer, booking.tipamount, "Tip");
-    }
-    if (booking.status === "COMPLETE") {
-      const language = Object.values((await db.ref("languages").orderByChild("default").equalTo(true).once("value")).val())[0].keyValuePairs;
-      const detailsData = await db.ref("smtpdata").once("value");
-      const details = detailsData.val();
-      const settingdata = await db.ref("settings").once("value");
-      const settings = settingdata.val();
-      if (details) {
-        try {
-          const transporter = nodemailer.createTransport(details.smtpDetails);
-          const createdAtDate = new Date(booking.tripdate);
-          const triphours = new Date(booking.tripdate).getHours();
-          const tripmin = new Date(booking.tripdate).getMinutes();
-          const formattedTripDate = createdAtDate.toLocaleDateString();
 
-          const createdAtBookingDate = new Date(booking.bookingDate);
-          const bookinghours = new Date(booking.bookingDate).getHours();
-          const bookingmin = new Date(booking.bookingDate).getMinutes();
-          const formattedBookingDate = createdAtBookingDate.toLocaleDateString();
-          const html = `
+      if (oldrow.status !== booking.status && booking.status === "CANCELLED") {
+        if (booking.customer_paid && parseFloat(booking.customer_paid) > 0 && booking.payment_mode!=="cash") {
+          addToWallet(booking.customer, parseFloat(booking.customer_paid), "Admin Credit", null);
+        }
+        if (booking.booking_from_web && booking.payment_mode!=="cash" && appcat && appcat === "bidcab") {
+          addToWallet(booking.customer, parseFloat(booking.payableAmount), "Admin Credit", null);
+        }
+        if (oldrow.status === "ACCEPTED" && booking.cancelledBy === "customer") {
+          db.ref("tracking/" + booking.key).orderByChild("status").equalTo("ACCEPTED").once("value", (sdata) => {
+            const items = sdata.val();
+            if (items) {
+              let accTime;
+              for (const skey in items) {
+                accTime = new Date(items[skey].at);
+                break;
+              }
+              const date1 = new Date();
+              const date2 = new Date(accTime);
+              const diffTime = date1 - date2;
+              const diffMins = diffTime / (1000 * 60);
+              db.ref("cartypes").once("value", async (cardata) => {
+                const cars = cardata.val();
+                let cancelSlab = null;
+                for (const ckey in cars) {
+                  if (booking.carType === cars[ckey].name) {
+                    cancelSlab = cars[ckey].cancelSlab;
+                  }
+                }
+                let deductValue = 0;
+                if (cancelSlab) {
+                  for (let i = 0; i < cancelSlab.length; i++) {
+                    if (diffMins > parseFloat(cancelSlab[i].minsDelayed)) {
+                      deductValue = cancelSlab[i].amount;
+                    }
+                  }
+                }
+                if (deductValue > 0) {
+                  await db.ref("bookings/" + booking.key + "/cancellationFee").set(deductValue);
+                  deductFromWallet(booking.customer, deductValue, "Cancellation Fee");
+                  addToWallet(booking.driver, deductValue, "Cancellation Fee", null);
+                }
+              });
+            }
+          });
+        }
+      }
+      if (booking.status === "COMPLETE" && booking.tipamount &&booking.tipamount>0) {
+        addToWallet(booking.driver, booking.tipamount, "Tip", booking.id);
+        deductFromWallet(booking.customer, booking.tipamount, "Tip");
+      }
+      if (booking.status === "COMPLETE") {
+        const language = Object.values((await db.ref("languages").orderByChild("default").equalTo(true).once("value")).val())[0].keyValuePairs;
+        const detailsData = await db.ref("smtpdata").once("value");
+        const details = detailsData.val();
+        const settingdata = await db.ref("settings").once("value");
+        const settings = settingdata.val();
+        if (details) {
+          try {
+            const transporter = nodemailer.createTransport(details.smtpDetails);
+            const createdAtDate = new Date(booking.tripdate);
+            const triphours = new Date(booking.tripdate).getHours();
+            const tripmin = new Date(booking.tripdate).getMinutes();
+            const formattedTripDate = createdAtDate.toLocaleDateString();
+
+            const createdAtBookingDate = new Date(booking.bookingDate);
+            const bookinghours = new Date(booking.bookingDate).getHours();
+            const bookingmin = new Date(booking.bookingDate).getMinutes();
+            const formattedBookingDate = createdAtBookingDate.toLocaleDateString();
+            const html = `
                         <!DOCTYPE html>
                         <html>
                         <head>
@@ -416,18 +399,18 @@ exports.updateBooking = onValueUpdated(
                         </div>
                         </body>
                         </html>`;
-          transporter.sendMail({
-            from: details.fromEmail,
-            to: booking.customer_email,
-            subject: language.ride_details_page_title,
-            html: html,
-          }).then((res) => console.log("successfully sent that mail")).catch((err) => console.log(err));
-        } catch (error) {
-          console.log(error.toString());
+            transporter.sendMail({
+              from: details.fromEmail,
+              to: booking.customer_email,
+              subject: language.ride_details_page_title,
+              html: html,
+            }).then((res) => console.log("successfully sent that mail")).catch((err) => console.log(err));
+          } catch (error) {
+            console.log(error.toString());
+          }
         }
       }
-    }
-    if (booking.payment_mode ==="wallet" &&
+      if (booking.payment_mode ==="wallet" &&
             (
               (oldrow.status === "PAYMENT_PENDING" && booking.status === "NEW" && booking.prepaid) ||
                 (oldrow.status === "PENDING" && booking.status === "PAID" && !booking.prepaid) ||
@@ -435,142 +418,142 @@ exports.updateBooking = onValueUpdated(
                 (oldrow.status === "NEW" && booking.status === "ACCEPTED" && booking.prepaid && !(booking.customer_paid && parseFloat(booking.customer_paid)>=0)) ||
                 (oldrow.status === "NEW" && booking.status === "ACCEPTED" && oldrow.selectedBid && !booking.selectedBid && booking.prepaid)
             )
-    ) {
-      const snapshot = await db.ref("users/" + booking.customer).once("value");
-      const profile = snapshot.val();
-      const settingdata = await db.ref("settings").once("value");
-      const settings = settingdata.val();
-      const walletBal = parseFloat(profile.walletBalance) - parseFloat(parseFloat(booking.trip_cost) - parseFloat(booking.discount));
-      const tDate = new Date();
-      const details = {
-        type: "Debit",
-        amount: parseFloat(parseFloat(booking.trip_cost) - parseFloat(booking.discount)),
-        date: tDate.getTime(),
-        txRef: booking.id,
-      };
-      await db.ref("users/" + booking.customer).update({ walletBalance: parseFloat(parseFloat(walletBal).toFixed(settings.decimal)) });
-      await db.ref("walletHistory/" + booking.customer).push(details);
-      const langSnap = await db.ref("languages").orderByChild("default").equalTo(true).once("value");
-      const language = Object.values(langSnap.val())[0].keyValuePairs;
-      if (profile.pushToken) {
-        RequestPushMsg(
-          profile.pushToken,
-          {
-            title: language.notification_title,
-            msg: language.wallet_updated,
-            screen: "Wallet",
-            ios: profile.userPlatform === "IOS"? true: false,
-          },
-        );
+      ) {
+        const snapshot = await db.ref("users/" + booking.customer).once("value");
+        const profile = snapshot.val();
+        const settingdata = await db.ref("settings").once("value");
+        const settings = settingdata.val();
+        const walletBal = parseFloat(profile.walletBalance) - parseFloat(parseFloat(booking.trip_cost) - parseFloat(booking.discount));
+        const tDate = new Date();
+        const details = {
+          type: "Debit",
+          amount: parseFloat(parseFloat(booking.trip_cost) - parseFloat(booking.discount)),
+          date: tDate.getTime(),
+          txRef: booking.id,
+        };
+        await db.ref("users/" + booking.customer).update({walletBalance: parseFloat(parseFloat(walletBal).toFixed(settings.decimal))});
+        await db.ref("walletHistory/" + booking.customer).push(details);
+        const langSnap = await db.ref("languages").orderByChild("default").equalTo(true).once("value");
+        const language = Object.values(langSnap.val())[0].keyValuePairs;
+        if (profile.pushToken) {
+          RequestPushMsg(
+              profile.pushToken,
+              {
+                title: language.notification_title,
+                msg: language.wallet_updated,
+                screen: "Wallet",
+                ios: profile.userPlatform === "IOS"? true: false,
+              },
+          );
+        }
       }
-    }
-    if ((oldrow.status === "REACHED" && booking.status === "PAID") ||
+      if ((oldrow.status === "REACHED" && booking.status === "PAID") ||
            (oldrow.status === "PENDING" && booking.status === "PAID") ||
            (oldrow.status === "PENDING" && booking.status === "COMPLETE") ||
            (oldrow.status === "REACHED" && booking.status === "COMPLETE")
-    ) {
-      const snapshotDriver = await db.ref("users/" + booking.driver).once("value");
-      const profileDriver = snapshotDriver.val();
-      const settingdata = await db.ref("settings").once("value");
-      const settings = settingdata.val();
-      let driverWalletBal = parseFloat(profileDriver.walletBalance);
-      if (booking.payment_mode ==="cash" && booking.cashPaymentAmount && parseFloat(booking.cashPaymentAmount)> 0) {
-        const details = {
-          type: "Debit",
-          amount: booking.cashPaymentAmount,
-          date: new Date().getTime(),
-          txRef: booking.id,
-        };
-        await db.ref("walletHistory/" + booking.driver).push(details);
-        driverWalletBal = driverWalletBal - parseFloat(booking.cashPaymentAmount);
-      }
-      if (booking.fleetadmin && booking.fleetadmin.length>0 && booking.fleetCommission && booking.fleetCommission>0) {
-        const snapshotFleet = await db.ref("users/" + booking.fleetadmin).once("value");
-        const profileFleet = snapshotFleet.val();
-        let fleetWalletBal = parseFloat(profileFleet.walletBalance);
-        fleetWalletBal = fleetWalletBal + parseFloat( booking.fleetCommission);
-        const detailsFleet = {
+      ) {
+        const snapshotDriver = await db.ref("users/" + booking.driver).once("value");
+        const profileDriver = snapshotDriver.val();
+        const settingdata = await db.ref("settings").once("value");
+        const settings = settingdata.val();
+        let driverWalletBal = parseFloat(profileDriver.walletBalance);
+        if (booking.payment_mode ==="cash" && booking.cashPaymentAmount && parseFloat(booking.cashPaymentAmount)> 0) {
+          const details = {
+            type: "Debit",
+            amount: booking.cashPaymentAmount,
+            date: new Date().getTime(),
+            txRef: booking.id,
+          };
+          await db.ref("walletHistory/" + booking.driver).push(details);
+          driverWalletBal = driverWalletBal - parseFloat(booking.cashPaymentAmount);
+        }
+        if (booking.fleetadmin && booking.fleetadmin.length>0 && booking.fleetCommission && booking.fleetCommission>0) {
+          const snapshotFleet = await db.ref("users/" + booking.fleetadmin).once("value");
+          const profileFleet = snapshotFleet.val();
+          let fleetWalletBal = parseFloat(profileFleet.walletBalance);
+          fleetWalletBal = fleetWalletBal + parseFloat( booking.fleetCommission);
+          const detailsFleet = {
+            type: "Credit",
+            amount: booking.fleetCommission,
+            date: new Date().getTime(),
+            txRef: booking.id,
+          };
+          await db.ref("walletHistory/" + booking.fleetadmin).push(detailsFleet);
+          await db.ref("users/" + booking.fleetadmin).update({walletBalance: parseFloat(parseFloat(fleetWalletBal).toFixed(settings.decimal))});
+        }
+        driverWalletBal = driverWalletBal + parseFloat(booking.driver_share);
+        const driverDetails = {
           type: "Credit",
-          amount: booking.fleetCommission,
+          amount: booking.driver_share,
           date: new Date().getTime(),
           txRef: booking.id,
         };
-        await db.ref("walletHistory/" + booking.fleetadmin).push(detailsFleet);
-        await db.ref("users/" + booking.fleetadmin).update({ walletBalance: parseFloat(parseFloat(fleetWalletBal).toFixed(settings.decimal)) });
+        await db.ref("users/" + booking.driver).update({walletBalance: parseFloat(parseFloat(driverWalletBal).toFixed(settings.decimal))});
+        await db.ref("walletHistory/" + booking.driver).push(driverDetails);
+        const langSnap = await db.ref("languages").orderByChild("default").equalTo(true).once("value");
+        const language = Object.values(langSnap.val())[0].keyValuePairs;
+        if (profileDriver.pushToken) {
+          RequestPushMsg(
+              profileDriver.pushToken,
+              {
+                title: language.notification_title,
+                msg: language.wallet_updated,
+                screen: "Wallet",
+                ios: profileDriver.userPlatform === "IOS"? true: false,
+              },
+          );
+        }
       }
-      driverWalletBal = driverWalletBal + parseFloat(booking.driver_share);
-      const driverDetails = {
-        type: "Credit",
-        amount: booking.driver_share,
-        date: new Date().getTime(),
-        txRef: booking.id,
-      };
-      await db.ref("users/" + booking.driver).update({ walletBalance: parseFloat(parseFloat(driverWalletBal).toFixed(settings.decimal)) });
-      await db.ref("walletHistory/" + booking.driver).push(driverDetails);
-      const langSnap = await db.ref("languages").orderByChild("default").equalTo(true).once("value");
-      const language = Object.values(langSnap.val())[0].keyValuePairs;
-      if (profileDriver.pushToken) {
-        RequestPushMsg(
-          profileDriver.pushToken,
-          {
-            title: language.notification_title,
-            msg: language.wallet_updated,
-            screen: "Wallet",
-            ios: profileDriver.userPlatform === "IOS"? true: false,
-          },
-        );
-      }
-    }
-  },
+    },
 );
 
 exports.withdrawCreate = onValueCreated(
-  {
-    ref: "/withdraws/{wid}",
-  },
-  async(event) => {
-    const wid = event.params.wid;
-    const withdrawInfo = event.data.val();
-    const uid = withdrawInfo.uid;
-    const amount = withdrawInfo.amount;
+    {
+      ref: "/withdraws/{wid}",
+    },
+    async (event) => {
+      const wid = event.params.wid;
+      const withdrawInfo = event.data.val();
+      const uid = withdrawInfo.uid;
+      const amount = withdrawInfo.amount;
 
-    const db = getDatabase();
-    const userData = await db.ref("users/" + uid).once("value");
-    const profile = userData.val();
-    const settingdata = await db.ref("settings").once("value");
-    const settings = settingdata.val();
-    const walletBal = parseFloat(profile.walletBalance) - parseFloat(amount);
+      const db = getDatabase();
+      const userData = await db.ref("users/" + uid).once("value");
+      const profile = userData.val();
+      const settingdata = await db.ref("settings").once("value");
+      const settings = settingdata.val();
+      const walletBal = parseFloat(profile.walletBalance) - parseFloat(amount);
 
-    const tDate = new Date();
-    const details = {
-      type: "Withdraw",
-      amount: amount,
-      date: tDate.getTime(),
-      txRef: tDate.getTime().toString(),
-      transaction_id: wid,
-    };
+      const tDate = new Date();
+      const details = {
+        type: "Withdraw",
+        amount: amount,
+        date: tDate.getTime(),
+        txRef: tDate.getTime().toString(),
+        transaction_id: wid,
+      };
 
-    await db.ref("users/" + uid).update({ walletBalance: parseFloat(parseFloat(walletBal).toFixed(settings.decimal)) });
-    await db.ref("walletHistory/" + uid).push(details);
+      await db.ref("users/" + uid).update({walletBalance: parseFloat(parseFloat(walletBal).toFixed(settings.decimal))});
+      await db.ref("walletHistory/" + uid).push(details);
 
-    const langSnap = await db.ref("languages").orderByChild("default").equalTo(true).once("value");
-    const language = Object.values(langSnap.val())[0].keyValuePairs;
+      const langSnap = await db.ref("languages").orderByChild("default").equalTo(true).once("value");
+      const language = Object.values(langSnap.val())[0].keyValuePairs;
 
-    if (profile.pushToken) {
-      RequestPushMsg(
-        profile.pushToken,
-        {
-          title: language.notification_title,
-          msg: language.wallet_updated,
-          screen: "Wallet",
-          ios: profile.userPlatform === "IOS" ? true : false,
-        },
-      );
-    }
-  },
+      if (profile.pushToken) {
+        RequestPushMsg(
+            profile.pushToken,
+            {
+              title: language.notification_title,
+              msg: language.wallet_updated,
+              screen: "Wallet",
+              ios: profile.userPlatform === "IOS" ? true : false,
+            },
+        );
+      }
+    },
 );
 
-exports.bookingScheduler = onSchedule("every 1 minutes", async(event) => {
+exports.bookingScheduler = onSchedule("every 1 minutes", async (event) => {
   const db = getDatabase();
   const settingdata = await db.ref("settings").once("value");
   const settings = settingdata.val();
@@ -598,7 +581,7 @@ exports.bookingScheduler = onSchedule("every 1 minutes", async(event) => {
         const diffTime = date2 - date1;
         const diffMins = diffTime / (1000 * 60);
         if ((diffMins > 0 && diffMins < 15 && booking.bookLater && !booking.requestedDrivers) || diffMins < -1) {
-          db.ref("/users").orderByChild("queue").equalTo(false).once("value", async(ddata) => {
+          db.ref("/users").orderByChild("queue").equalTo(false).once("value", async (ddata) => {
             const drivers = ddata.val();
             if (drivers) {
               const langSnap = await db.ref("languages").orderByChild("default").equalTo(true).once("value");
@@ -619,12 +602,12 @@ exports.bookingScheduler = onSchedule("every 1 minutes", async(event) => {
                         addEstimate(booking.key, driver.key, originalDistance, booking.deliveryWithBid);
                         if (driver.pushToken) {
                           RequestPushMsg(
-                            driver.pushToken,
-                            {
-                              title: language.notification_title,
-                              msg: language.new_booking_notification,
-                              screen: "DriverTrips",
-                            },
+                              driver.pushToken,
+                              {
+                                title: language.notification_title,
+                                msg: language.new_booking_notification,
+                                screen: "DriverTrips",
+                              },
                           );
                         }
                         return true;
@@ -661,52 +644,52 @@ exports.bookingScheduler = onSchedule("every 1 minutes", async(event) => {
 
 
 exports.userDelete = onValueDeleted(
-  {
-    ref: "/users/{uid}",
-  },
-  async(event) => {
-    try {
-      const uid = event.params.uid;
-      await admin.auth().deleteUser(uid);
-      console.log(`User with UID: ${uid} has been deleted.`);
-    } catch (error) {
-      console.error(`Error deleting user with UID: ${event.params.uid}`, error);
-    }
-  });
+    {
+      ref: "/users/{uid}",
+    },
+    async (event) => {
+      try {
+        const uid = event.params.uid;
+        await admin.auth().deleteUser(uid);
+        console.log(`User with UID: ${uid} has been deleted.`);
+      } catch (error) {
+        console.error(`Error deleting user with UID: ${event.params.uid}`, error);
+      }
+    });
 
 exports.userCreate = onValueCreated(
-  {
-    ref: "/users/{uid}",
-  },
-  async(event) => {
-    try {
-      const uid = event.params.uid;
-      const userInfo = event.data.val();
-      const userCred = { uid: uid };
-
-      if (userInfo.mobile) {
-        userCred.phoneNumber = userInfo.mobile;
-      }
-      if (userInfo.email) {
-        userCred.email = userInfo.email;
-      }
+    {
+      ref: "/users/{uid}",
+    },
+    async (event) => {
       try {
-        await getAuth().getUser(uid);
-        console.log("User already exists with UID:", uid);
-      } catch (error) {
-        if (uid === "admin0001") {
-          userCred.password = "Admin@123";
+        const uid = event.params.uid;
+        const userInfo = event.data.val();
+        const userCred = {uid: uid};
+
+        if (userInfo.mobile) {
+          userCred.phoneNumber = userInfo.mobile;
         }
-        await getAuth().createUser(userCred);
-        console.log("User successfully created with UID:", uid);
+        if (userInfo.email) {
+          userCred.email = userInfo.email;
+        }
+        try {
+          await getAuth().getUser(uid);
+          console.log("User already exists with UID:", uid);
+        } catch (error) {
+          if (uid === "admin0001") {
+            userCred.password = "Admin@123";
+          }
+          await getAuth().createUser(userCred);
+          console.log("User successfully created with UID:", uid);
+        }
+      } catch (error) {
+        console.error("Error handling user creation:", error);
       }
-    } catch (error) {
-      console.error("Error handling user creation:", error);
-    }
-  },
+    },
 );
 
-exports.send_notification = functions.https.onRequest(async(req, res) => {
+exports.send_notification = functions.https.onRequest(async (req, res) => {
   try {
     const settingDataSnapshot = await admin.database().ref("settings").once("value");
     const settings = settingDataSnapshot.val();
@@ -722,27 +705,27 @@ exports.send_notification = functions.https.onRequest(async(req, res) => {
 
     if (notification) {
       const snapshot = await admin
-        .database()
-        .ref("users")
-        .orderByChild("usertype")
-        .equalTo(notification.usertype)
-        .once("value");
+          .database()
+          .ref("users")
+          .orderByChild("usertype")
+          .equalTo(notification.usertype)
+          .once("value");
       const usersSnap = snapshot.val();
 
       if (usersSnap) {
         const users = Object.values(usersSnap);
         const tokens = users
-          .filter(
-            (usr) =>
-              usr.pushToken &&
+            .filter(
+                (usr) =>
+                  usr.pushToken &&
                 usr.pushToken !== "web" &&
                 usr.pushToken !== "token_error" &&
                 usr.pushToken !== "init" &&
                 usr.pushToken !== null &&
                 usr.usertype === notification.usertype &&
                 (usr.userPlatform === notification.devicetype || notification.devicetype === "All"),
-          )
-          .map((usr) => usr.pushToken);
+            )
+            .map((usr) => usr.pushToken);
 
         if (tokens.length > 0) {
           const chunkSize = 100;
@@ -759,7 +742,7 @@ exports.send_notification = functions.https.onRequest(async(req, res) => {
                 data,
               });
             }
-            res.send({ success: true, message: "Notifications queued in packets." });
+            res.send({success: true, message: "Notifications queued in packets."});
           } else {
             let processed = 0;
             for (let i = 0; i < tokens.length; i += chunkSize) {
@@ -774,13 +757,13 @@ exports.send_notification = functions.https.onRequest(async(req, res) => {
                 await RequestPushMsg(chunk, data);
                 processed += chunk.length;
                 if (processed === tokens.length) {
-                  res.send({ success: true });
+                  res.send({success: true});
                 }
               } catch (error) {
                 console.error(error);
                 processed += chunk.length;
                 if (processed === tokens.length) {
-                  res.send({ success: false, error: "Some notifications failed." });
+                  res.send({success: false, error: "Some notifications failed."});
                 }
               }
             }
@@ -809,17 +792,17 @@ exports.send_notification = functions.https.onRequest(async(req, res) => {
         const responseData = await RequestPushMsg(req.body.token, data);
         res.send(responseData);
       } catch (error) {
-        res.send({ error });
+        res.send({error});
       }
     }
   } catch (error) {
     console.error(error);
-    res.status(500).send({ error: "Internal server error." });
+    res.status(500).send({error: "Internal server error."});
   }
 });
 
 
-exports.check_user_exists = onRequest( async(request, response) => {
+exports.check_user_exists = onRequest( async (request, response) => {
   const db = getDatabase();
   const settingdata = await db.ref("settings").once("value");
   const settings = settingdata.val();
@@ -840,35 +823,35 @@ exports.check_user_exists = onRequest( async(request, response) => {
   if (user) {
     if (request.body.email || request.body.mobile) {
       if (request.body.email) {
-        arr.push({ email: request.body.email });
+        arr.push({email: request.body.email});
       }
       if (request.body.mobile) {
-        arr.push({ phoneNumber: request.body.mobile });
+        arr.push({phoneNumber: request.body.mobile});
       }
       try {
         admin
-          .auth()
-          .getUsers(arr)
-          .then((getUsersResult) => {
-            response.send({ users: getUsersResult.users });
-            return true;
-          })
-          .catch((error) => {
-            response.send({ error: error });
-          });
+            .auth()
+            .getUsers(arr)
+            .then((getUsersResult) => {
+              response.send({users: getUsersResult.users});
+              return true;
+            })
+            .catch((error) => {
+              response.send({error: error});
+            });
       } catch (error) {
-        response.send({ error: error });
+        response.send({error: error});
       }
     } else {
-      response.send({ error: "Email or Mobile not found." });
+      response.send({error: "Email or Mobile not found."});
     }
   } else {
-    response.send({ error: "Unauthorized api call" });
+    response.send({error: "Unauthorized api call"});
   }
 });
 
 
-exports.validate_referrer = onRequest(async(request, response) => {
+exports.validate_referrer = onRequest(async (request, response) => {
   const db = getDatabase();
   const referralId = request.body.referralId;
   response.set("Access-Control-Allow-Origin", "*");
@@ -883,13 +866,13 @@ exports.validate_referrer = onRequest(async(request, response) => {
         key = arr[i];
       }
     }
-    response.send({ uid: key });
+    response.send({uid: key});
   } else {
-    response.send({ uid: null });
+    response.send({uid: null});
   }
 });
 
-exports.user_signup = onRequest(async(request, response) => {
+exports.user_signup = onRequest(async (request, response) => {
   response.set("Access-Control-Allow-Origin", "*");
   response.set("Access-Control-Allow-Headers", "Content-Type");
 
@@ -919,17 +902,17 @@ exports.user_signup = onRequest(async(request, response) => {
           await addToWallet(userDetails.signupViaReferral, settings.bonus, "Admin Credit", null);
           await addToWallet(userRecord.uid, settings.bonus, "Admin Credit", null);
         }
-        response.send({ uid: userRecord.uid });
+        response.send({uid: userRecord.uid});
       } else {
-        response.send({ error: "User Not Created" });
+        response.send({error: "User Not Created"});
       }
     }
   } catch (error) {
-    response.send({ error: "User Not Created" });
+    response.send({error: "User Not Created"});
   }
 });
 
-exports.update_user_email = onRequest(async(request, response) => {
+exports.update_user_email = onRequest(async (request, response) => {
   const db = getDatabase();
   const settingdata = await db.ref("settings").once("value");
   const settings = settingdata.val();
@@ -948,49 +931,49 @@ exports.update_user_email = onRequest(async(request, response) => {
         email: email,
         emailVerified: true,
       })
-        .then((userRecord) => {
-          const updateData = { uid: uid, email: email };
-          if (request.body.firstName) {
-            updateData["firstName"] = request.body.firstName;
-          }
-          if (request.body.lastName) {
-            updateData["lastName"] = request.body.lastName;
-          }
-          db.ref("users/" + uid).update(updateData);
-          response.send({ success: true, user: userRecord });
-          return true;
-        })
-        .catch((error) => {
-          response.send({ error: "Error updating user" });
-        });
+          .then((userRecord) => {
+            const updateData = {uid: uid, email: email};
+            if (request.body.firstName) {
+              updateData["firstName"] = request.body.firstName;
+            }
+            if (request.body.lastName) {
+              updateData["lastName"] = request.body.lastName;
+            }
+            db.ref("users/" + uid).update(updateData);
+            response.send({success: true, user: userRecord});
+            return true;
+          })
+          .catch((error) => {
+            response.send({error: "Error updating user"});
+          });
     } else {
-      response.send({ error: "Request email not found" });
+      response.send({error: "Request email not found"});
     }
   } else {
-    response.send({ error: "Unauthorized api call" });
+    response.send({error: "Unauthorized api call"});
   }
 });
 
 exports.gettranslation = onRequest((request, response) => {
   response.set("Access-Control-Allow-Origin", "*");
   response.set("Access-Control-Allow-Headers", "Content-Type");
-  translate(request.query.str, { from: request.query.from, to: request.query.to })
-    .then((res) => {
-      response.send({ text: res.text });
-      return true;
-    }).catch((err) => {
-      response.send({ error: err.toString() });
-      return false;
-    });
+  translate(request.query.str, {from: request.query.from, to: request.query.to})
+      .then((res) => {
+        response.send({text: res.text});
+        return true;
+      }).catch((err) => {
+        response.send({error: err.toString()});
+        return false;
+      });
 });
 
 exports.getservertime = onRequest((request, response) => {
   response.set("Access-Control-Allow-Origin", "*");
   response.set("Access-Control-Allow-Headers", "Content-Type");
-  response.send({ time: new Date().getTime() });
+  response.send({time: new Date().getTime()});
 });
 
-exports.checksmtpdetails = onRequest(async(request, response) => {
+exports.checksmtpdetails = onRequest(async (request, response) => {
   response.set("Access-Control-Allow-Origin", "*");
   response.set("Access-Control-Allow-Headers", "Content-Type");
 
@@ -1018,23 +1001,23 @@ exports.checksmtpdetails = onRequest(async(request, response) => {
     };
 
     transporter.sendMail(mailOptions)
-      .then((res) => {
-        admin.database().ref("smtpdata").set({
-          fromEmail: fromEmail,
-          smtpDetails: smtpDetails,
+        .then((res) => {
+          admin.database().ref("smtpdata").set({
+            fromEmail: fromEmail,
+            smtpDetails: smtpDetails,
+          });
+          response.send({success: true});
+          return true;
+        })
+        .catch((error) => {
+          response.send({error: error.toString()});
         });
-        response.send({ success: true });
-        return true;
-      })
-      .catch((error) => {
-        response.send({ error: error.toString() });
-      });
   } catch (error) {
-    response.send({ error: error.toString() });
+    response.send({error: error.toString()});
   }
 });
 
-exports.check_auth_exists = onRequest(async(request, response) => {
+exports.check_auth_exists = onRequest(async (request, response) => {
   const db = getDatabase();
   const settingdata = await db.ref("settings").once("value");
   const settings = settingdata.val();
@@ -1053,7 +1036,7 @@ exports.check_auth_exists = onRequest(async(request, response) => {
 });
 
 
-exports.request_mobile_otp = onRequest(async(request, response) => {
+exports.request_mobile_otp = onRequest(async (request, response) => {
   const db = getDatabase();
   response.set("Access-Control-Allow-Origin", "*");
   response.set("Access-Control-Allow-Headers", "Content-Type");
@@ -1088,13 +1071,13 @@ exports.request_mobile_otp = onRequest(async(request, response) => {
     };
     const resMsg = await rgf.callMsgApi(config, smsConfig, data);
     await db.ref("/otp_auth_requests").push(data);
-    response.send({ "success": true });
+    response.send({"success": true});
   } else {
-    response.send({ error: "Setup error" });
+    response.send({error: "Setup error"});
   }
 });
 
-exports.verify_mobile_otp = onRequest(async(request, response) => {
+exports.verify_mobile_otp = onRequest(async (request, response) => {
   const db = getDatabase();
   const settingdata = await db.ref("settings").once("value");
   const settings = settingdata.val();
@@ -1112,7 +1095,7 @@ exports.verify_mobile_otp = onRequest(async(request, response) => {
     const check = await rgf.otpCheck(config, mobile, listData);
     if (check.errorStr) {
       await db.ref(`/otp_auth_requests/${check.key}`).remove();
-      response.send({ error: check.errorStr });
+      response.send({error: check.errorStr});
     } else {
       if (check.data.mobile) {
         if (parseInt(check.data.otp) === parseInt(otp)) {
@@ -1126,26 +1109,26 @@ exports.verify_mobile_otp = onRequest(async(request, response) => {
           }
           try {
             const customToken = await admin.auth().createCustomToken(userRecord.uid);
-            response.send({ token: customToken });
+            response.send({token: customToken});
           } catch (error) {
             console.log(error);
-            response.send({ error: "Error creating custom token" });
+            response.send({error: "Error creating custom token"});
           }
         } else {
           check.data["count"] = check.data.count? check.data.count + 1: 1;
           await db.ref(`/otp_auth_requests/${check.key}`).update(check.data);
-          response.send({ error: "OTP mismatch" });
+          response.send({error: "OTP mismatch"});
         }
       } else {
-        response.send({ error: "Request mobile not found" });
+        response.send({error: "Request mobile not found"});
       }
     }
   } else {
-    response.send({ error: "Request mobile not found" });
+    response.send({error: "Request mobile not found"});
   }
 });
 
-exports.update_auth_mobile = onRequest(async(request, response) => {
+exports.update_auth_mobile = onRequest(async (request, response) => {
   const db = getDatabase();
   const settingdata = await db.ref("settings").once("value");
   const settings = settingdata.val();
@@ -1164,30 +1147,30 @@ exports.update_auth_mobile = onRequest(async(request, response) => {
     const check = await rgf.otpCheck(config, mobile, listData);
     if (check.errorStr) {
       await db.ref(`/otp_auth_requests/${check.key}`).remove();
-      response.send({ error: check.errorStr });
+      response.send({error: check.errorStr});
     } else {
       if (check.data.mobile) {
         if (parseInt(check.data.otp) === parseInt(otp)) {
           admin.auth().updateUser(uid, {
             phoneNumber: mobile,
           })
-            .then((userRecord) => {
-              response.send({ success: true, user: userRecord });
-              return true;
-            })
-            .catch((error) => {
-              response.send({ error: "Error updating user" });
-            });
+              .then((userRecord) => {
+                response.send({success: true, user: userRecord});
+                return true;
+              })
+              .catch((error) => {
+                response.send({error: "Error updating user"});
+              });
         } else {
           check.data["count"] = check.data.count? check.data.count + 1: 1;
           await db.ref(`/otp_auth_requests/${check.key}`).update(check.data);
-          response.send({ error: "OTP mismatch" });
+          response.send({error: "OTP mismatch"});
         }
       } else {
-        response.send({ error: "Request mobile not found" });
+        response.send({error: "Request mobile not found"});
       }
     }
   } else {
-    response.send({ error: "Request mobile not found" });
+    response.send({error: "Request mobile not found"});
   }
 });

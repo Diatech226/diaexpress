@@ -56,19 +56,19 @@ module.exports.render_checkout = async function(request, response) {
     },
     body: JSON.stringify(data),
   })
-    .then((res) => res.json())
-    .then((json) => {
-      if (json.short_url) {
-        response.redirect(json.short_url);
-      } else {
+      .then((res) => res.json())
+      .then((json) => {
+        if (json.short_url) {
+          response.redirect(json.short_url);
+        } else {
+          response.redirect("/cancel");
+        }
+        return true;
+      })
+      .catch((error)=>{
+        console.log(error);
         response.redirect("/cancel");
-      }
-      return true;
-    })
-    .catch((error)=>{
-      console.log(error);
-      response.redirect("/cancel");
-    });
+      });
 };
 
 module.exports.process_checkout = async function(req, res) {

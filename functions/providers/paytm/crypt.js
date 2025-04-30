@@ -1,10 +1,10 @@
 "use strict";
 
-var crypto = require("crypto");
-var util = require("util");
+const crypto = require("crypto");
+const util = require("util");
 
 
-var crypt = {
+const crypt = {
   iv: "@@@@&&&&####$$$$",
 
   encrypt: function(data, custom_key) {
@@ -12,15 +12,15 @@ var crypt = {
     const key = custom_key;
     let algo = "256";
     switch (key.length) {
-    case 16:
-      algo = "128";
-      break;
-    case 24:
-      algo = "192";
-      break;
-    case 32:
-      algo = "256";
-      break;
+      case 16:
+        algo = "128";
+        break;
+      case 24:
+        algo = "192";
+        break;
+      case 32:
+        algo = "256";
+        break;
     }
     const cipher = crypto.createCipheriv("AES-" + algo + "-CBC", key, iv);
     // var cipher = crypto.createCipher('aes256',key);
@@ -34,15 +34,15 @@ var crypt = {
     const key = custom_key;
     let algo = "256";
     switch (key.length) {
-    case 16:
-      algo = "128";
-      break;
-    case 24:
-      algo = "192";
-      break;
-    case 32:
-      algo = "256";
-      break;
+      case 16:
+        algo = "128";
+        break;
+      case 24:
+        algo = "192";
+        break;
+      case 32:
+        algo = "256";
+        break;
     }
     const decipher = crypto.createDecipheriv("AES-" + algo + "-CBC", key, iv);
     let decrypted = decipher.update(data, "base64", "binary");

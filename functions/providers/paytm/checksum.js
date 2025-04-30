@@ -1,8 +1,8 @@
 "use strict";
 
-var crypt = require("./crypt");
-var util = require("util");
-var crypto = require("crypto");
+const crypt = require("./crypt");
+const util = require("util");
+const crypto = require("crypto");
 
 // mandatory flag: when it set, only mandatory parameters are added to checksum
 

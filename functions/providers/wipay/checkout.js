@@ -47,19 +47,19 @@ module.exports.render_checkout = async function(request, response) {
     },
     body: formBody,
   })
-    .then((res) => res.json())
-    .then((json) => {
-      if (json.url) {
-        response.redirect(json.url);
-      } else {
+      .then((res) => res.json())
+      .then((json) => {
+        if (json.url) {
+          response.redirect(json.url);
+        } else {
+          response.redirect("/cancel");
+        }
+        return true;
+      })
+      .catch((error)=>{
+        console.log(error);
         response.redirect("/cancel");
-      }
-      return true;
-    })
-    .catch((error)=>{
-      console.log(error);
-      response.redirect("/cancel");
-    });
+      });
 };
 
 module.exports.process_checkout = async function(req, res) {

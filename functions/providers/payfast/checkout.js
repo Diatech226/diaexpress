@@ -5,7 +5,7 @@ const axios = require("axios");
 const addToWallet = require("../../common").addToWallet;
 const UpdateBooking = require("../../common/sharedFunctions").UpdateBooking;
 
-const generateSignature = async(data) => {
+const generateSignature = async (data) => {
   const config = (await admin.database().ref("payment_settings/payfast").once("value")).val();
   const passPhrase = config.passPhrase;
 
@@ -38,14 +38,14 @@ const pfValidPaymentData = (cartTotal, pfData) => {
 };
 
 
-const pfValidServerConfirmation = async(pfHost, pfParamString) => {
+const pfValidServerConfirmation = async (pfHost, pfParamString) => {
   const result = await axios.post(`https://${pfHost}/eng/query/validate`, pfParamString)
-    .then((res) => {
-      return res.data;
-    })
-    .catch((error) => {
-      console.error(error);
-    });
+      .then((res) => {
+        return res.data;
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   return result === "VALID";
 };
 
@@ -71,7 +71,7 @@ module.exports.render_checkout = async function(request, response) {
   myData["item_name"] = request.body.order_id;
   myData["signature"] = await generateSignature(myData);
   response.send(templateLib.getTemplate(
-    PAYFAST_CHECKOUT_URL, myData,
+      PAYFAST_CHECKOUT_URL, myData,
   ));
 };
 

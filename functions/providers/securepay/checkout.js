@@ -4,7 +4,7 @@ const templateLib = require("./template");
 const addToWallet = require("../../common").addToWallet;
 const UpdateBooking = require("../../common/sharedFunctions").UpdateBooking;
 
-module.exports.render_checkout = async(request, response) => {
+module.exports.render_checkout = async (request, response) => {
   const config = (await admin.database().ref("payment_settings/securepay").once("value")).val();
   const MERCHANT_CODE = config.MERCHANT_CODE;
   const TXN_PASSWORD = config.TXN_PASSWORD;
@@ -48,7 +48,7 @@ module.exports.render_checkout = async(request, response) => {
   response.send(templateLib.getTemplate(SECURE_PAY_INVOICE_URL, myData));
 };
 
-module.exports.process_checkout = async(request, response) => {
+module.exports.process_checkout = async (request, response) => {
   const config = (await admin.database().ref("payment_settings/securepay").once("value")).val();
   const MERCHANT_CODE = config.MERCHANT_CODE;
   const TXN_PASSWORD = config.TXN_PASSWORD;

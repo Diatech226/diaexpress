@@ -1,5 +1,5 @@
-var mercadopago = require("mercadopago");
-var request = require("request");
+const mercadopago = require("mercadopago");
+const request = require("request");
 const templateLib = require("./template");
 const admin = require("firebase-admin");
 const addToWallet = require("../../common").addToWallet;
@@ -36,15 +36,15 @@ module.exports.render_checkout = async function(request, response) {
   };
 
   mercadopago.preferences.create(preference)
-    .then((res)=>{
-      response.send(templateLib.getTemplate(res.body.id, public_key));
-      return true;
-    }).catch((error)=>{
-      response.redirect("/cancel");
-    });
+      .then((res)=>{
+        response.send(templateLib.getTemplate(res.body.id, public_key));
+        return true;
+      }).catch((error)=>{
+        response.redirect("/cancel");
+      });
 };
 
-module.exports.process_checkout = async(req, res) => {
+module.exports.process_checkout = async (req, res) => {
   const config = (await admin.database().ref("payment_settings/mercadopago").once("value")).val();
   const access_token = config.access_token;
 

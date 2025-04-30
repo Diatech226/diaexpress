@@ -38,23 +38,23 @@ module.exports.render_checkout = async function(request, response) {
     },
     body: JSON.stringify(data),
   })
-    .then((res) => res.json())
-    .then((json) => {
-      if (json && json.invoice_url) {
-        admin.database().ref("/xendit/" + request.body.order_id).set({
-          amount: request.body.amount,
-          id: json.id,
-        });
-        response.redirect(json.invoice_url);
-      } else {
+      .then((res) => res.json())
+      .then((json) => {
+        if (json && json.invoice_url) {
+          admin.database().ref("/xendit/" + request.body.order_id).set({
+            amount: request.body.amount,
+            id: json.id,
+          });
+          response.redirect(json.invoice_url);
+        } else {
+          response.redirect("/cancel");
+        }
+        return true;
+      })
+      .catch((error)=>{
+        console.log(error);
         response.redirect("/cancel");
-      }
-      return true;
-    })
-    .catch((error)=>{
-      console.log(error);
-      response.redirect("/cancel");
-    });
+      });
 };
 
 module.exports.process_checkout = async function(req, res) {

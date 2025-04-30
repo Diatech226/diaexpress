@@ -1,9 +1,9 @@
 function getTemplate(
-  APPLICATION_ID,
-  LOCATION_ID,
-  order_id,
-  amount,
-  currency,
+    APPLICATION_ID,
+    LOCATION_ID,
+    order_id,
+    amount,
+    currency,
 ) {
   return `
     <!DOCTYPE html>

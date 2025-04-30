@@ -1,7 +1,7 @@
 const admin = require("firebase-admin");
 
 module.exports.UpdateBooking = (bookingData, order_id, transaction_id, gateway) => {
-  admin.database().ref("settings").once("value", async(settingsdata) => {
+  admin.database().ref("settings").once("value", async (settingsdata) => {
     const settings = settingsdata.val();
     const curChanges = {
       status: bookingData.booking_from_web && !settings.prepaid? "COMPLETE": settings.prepaid ? "NEW" :"PAID",
@@ -11,7 +11,7 @@ module.exports.UpdateBooking = (bookingData, order_id, transaction_id, gateway) 
     };
     Object.assign(curChanges, bookingData.paymentPacket);
     admin.database().ref("bookings").child(order_id).update(curChanges);
-    admin.database().ref("users").child(bookingData.driver).update({ queue: false });
+    admin.database().ref("users").child(bookingData.driver).update({queue: false});
   });
 };
 

@@ -1,4 +1,4 @@
-const { onRequest } = require("firebase-functions/v2/https");
+const {onRequest} = require("firebase-functions/v2/https");
 const payfastcheckout = require("./checkout");
 
 exports.link = onRequest(payfastcheckout.render_checkout);

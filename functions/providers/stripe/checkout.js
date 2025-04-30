@@ -39,18 +39,18 @@ module.exports.render_checkout = async function(request, response) {
   };
 
   stripe.checkout.sessions.create(
-    session_data,
-    (err, session) => {
-      if (err) {
-        response.send({ "error": err });
-      } else if (session) {
-        response.send(
-          templateLib.getTemplate(stripe_public_key, session.id),
-        );
-      } else {
-        response.send({ "error": "Some other problem" });
-      }
-    },
+      session_data,
+      (err, session) => {
+        if (err) {
+          response.send({"error": err});
+        } else if (session) {
+          response.send(
+              templateLib.getTemplate(stripe_public_key, session.id),
+          );
+        } else {
+          response.send({"error": "Some other problem"});
+        }
+      },
   );
 };
 
@@ -60,31 +60,31 @@ module.exports.process_checkout = async function(request, response) {
 
   const session_id = request.query.session_id;
   stripe.checkout.sessions.retrieve(
-    session_id,
-    (err, session) => {
-      if (err) {
-        response.redirect("/cancel");
-      } else if (session) {
-        const order_id = session.metadata.order_id;
-        const transaction_id = session.payment_intent;
-        const amount = parseFloat((session.currency === "XOF" || session.currency === "KRA") ? session.amount_total: session.amount_total/100);
-        admin.database().ref("bookings").child(order_id).once("value", (snapshot) => {
-          if (snapshot.val()) {
-            const bookingData = snapshot.val();
-            UpdateBooking(bookingData, order_id, transaction_id, "stripe");
-            response.redirect(`/success?order_id=${order_id}&amount=${amount}&transaction_id=${transaction_id}`);
-          } else {
-            if (order_id.startsWith("wallet")) {
-              addToWallet(order_id.substr(7, order_id.length - 12), amount, order_id, transaction_id);
+      session_id,
+      (err, session) => {
+        if (err) {
+          response.redirect("/cancel");
+        } else if (session) {
+          const order_id = session.metadata.order_id;
+          const transaction_id = session.payment_intent;
+          const amount = parseFloat((session.currency === "XOF" || session.currency === "KRA") ? session.amount_total: session.amount_total/100);
+          admin.database().ref("bookings").child(order_id).once("value", (snapshot) => {
+            if (snapshot.val()) {
+              const bookingData = snapshot.val();
+              UpdateBooking(bookingData, order_id, transaction_id, "stripe");
               response.redirect(`/success?order_id=${order_id}&amount=${amount}&transaction_id=${transaction_id}`);
             } else {
-              response.redirect("/cancel");
+              if (order_id.startsWith("wallet")) {
+                addToWallet(order_id.substr(7, order_id.length - 12), amount, order_id, transaction_id);
+                response.redirect(`/success?order_id=${order_id}&amount=${amount}&transaction_id=${transaction_id}`);
+              } else {
+                response.redirect("/cancel");
+              }
             }
-          }
-        });
-      } else {
-        response.redirect("/cancel");
-      }
-    },
+          });
+        } else {
+          response.redirect("/cancel");
+        }
+      },
   );
 };

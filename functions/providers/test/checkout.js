@@ -8,8 +8,8 @@ module.exports.render_checkout = function(request, response) {
   const amount = request.body.amount;
 
   response.send(templateLib.getTemplate(
-    order_id,
-    amount,
+      order_id,
+      amount,
   ));
 };
 

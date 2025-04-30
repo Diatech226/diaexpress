@@ -1,6 +1,6 @@
 const admin = require("firebase-admin");
 const templateLib = require("./template");
-var crypto = require("crypto");
+const crypto = require("crypto");
 const addToWallet = require("../../common").addToWallet;
 const UpdateBooking = require("../../common/sharedFunctions").UpdateBooking;
 
@@ -31,10 +31,10 @@ module.exports.render_checkout =async function(request, response) {
   const server_url = refr ? ((refr.includes("bookings") || refr.includes("addbookings") || refr.includes("userwallet"))? refr.substring(0, refr.length - refr.split("/")[refr.split("/").length - 1].length) : refr) : request.protocol + "://" + request.get("host") + "/";
 
   response.send(templateLib.getTemplate(
-    keys,
-    orderDetails,
-    signature,
-    server_url + "payulatam-process",
+      keys,
+      orderDetails,
+      signature,
+      server_url + "payulatam-process",
   ));
 };
 

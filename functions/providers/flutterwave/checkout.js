@@ -1,4 +1,4 @@
-var request = require("request");
+const request = require("request");
 const templateLib = require("./template");
 const admin = require("firebase-admin");
 const addToWallet = require("../../common").addToWallet;

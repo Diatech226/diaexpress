@@ -59,20 +59,20 @@ module.exports.render_checkout = async function(request, response) {
     },
     body: JSON.stringify(body),
   })
-    .then((res) => res.json())
-    .then((json) => {
-      if (json.success && json.success === 1 && json.url && json.id) {
-        admin.database().ref("/slickpay/" + request.body.order_id).set(json.id);
-        response.redirect(json.url);
-      } else {
+      .then((res) => res.json())
+      .then((json) => {
+        if (json.success && json.success === 1 && json.url && json.id) {
+          admin.database().ref("/slickpay/" + request.body.order_id).set(json.id);
+          response.redirect(json.url);
+        } else {
+          response.redirect("/cancel");
+        }
+        return true;
+      })
+      .catch((error)=>{
+        console.log(error);
         response.redirect("/cancel");
-      }
-      return true;
-    })
-    .catch((error)=>{
-      console.log(error);
-      response.redirect("/cancel");
-    });
+      });
 };
 
 module.exports.process_checkout = async function(request, response) {
@@ -90,34 +90,34 @@ module.exports.process_checkout = async function(request, response) {
             "Accept": "application/json",
           },
         })
-          .then((res) => res.json())
-          .then((json) => {
-            if (json.success && json.success === 1 && json.completed && json.completed===1 && json.data && json.data.amount) {
-              const amount = json.data.amount;
-              admin.database().ref("slickpay").child(order_id).remove();
-              admin.database().ref("bookings").child(order_id).once("value", (snapshot) => {
-                if (snapshot.val()) {
-                  const bookingData = snapshot.val();
-                  UpdateBooking(bookingData, order_id, transaction_id, "slickpay");
-                  response.redirect(`/success?order_id=${order_id}&amount=${amount}&transaction_id=${transaction_id}`);
-                } else {
-                  if (order_id.startsWith("wallet")) {
-                    addToWallet(order_id.substr(7, order_id.length - 12), amount, order_id, transaction_id);
+            .then((res) => res.json())
+            .then((json) => {
+              if (json.success && json.success === 1 && json.completed && json.completed===1 && json.data && json.data.amount) {
+                const amount = json.data.amount;
+                admin.database().ref("slickpay").child(order_id).remove();
+                admin.database().ref("bookings").child(order_id).once("value", (snapshot) => {
+                  if (snapshot.val()) {
+                    const bookingData = snapshot.val();
+                    UpdateBooking(bookingData, order_id, transaction_id, "slickpay");
                     response.redirect(`/success?order_id=${order_id}&amount=${amount}&transaction_id=${transaction_id}`);
                   } else {
-                    response.redirect("/cancel");
+                    if (order_id.startsWith("wallet")) {
+                      addToWallet(order_id.substr(7, order_id.length - 12), amount, order_id, transaction_id);
+                      response.redirect(`/success?order_id=${order_id}&amount=${amount}&transaction_id=${transaction_id}`);
+                    } else {
+                      response.redirect("/cancel");
+                    }
                   }
-                }
-              });
-            } else {
+                });
+              } else {
+                response.redirect("/cancel");
+              }
+              return true;
+            })
+            .catch((error)=>{
+              console.log(error);
               response.redirect("/cancel");
-            }
-            return true;
-          })
-          .catch((error)=>{
-            console.log(error);
-            response.redirect("/cancel");
-          });
+            });
       } else {
         response.redirect("/cancel");
       }

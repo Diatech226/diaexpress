@@ -1,6 +1,6 @@
 function getTemplate(
-  order_id,
-  amount,
+    order_id,
+    amount,
 ) {
   return `
         <html>

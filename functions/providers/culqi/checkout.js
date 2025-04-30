@@ -1,11 +1,11 @@
-var request = require("request");
+const request = require("request");
 const templateLib = require("./template");
 const admin = require("firebase-admin");
 const addToWallet = require("../../common").addToWallet;
 const UpdateBooking = require("../../common/sharedFunctions").UpdateBooking;
 const API_URL = "https://api.culqi.com/v2/charges";
 
-module.exports.render_checkout =async(req, res) => {
+module.exports.render_checkout =async (req, res) => {
   const config = (await admin.database().ref("payment_settings/culqi").once("value")).val();
   const PUBLIC_KEY = config.PUBLIC_KEY;
 
@@ -20,7 +20,7 @@ module.exports.render_checkout =async(req, res) => {
 };
 
 
-module.exports.process_checkout = async(req, res) => {
+module.exports.process_checkout = async (req, res) => {
   const config = (await admin.database().ref("payment_settings/culqi").once("value")).val();
   const SECURE_KEY = config.SECURE_KEY;
 

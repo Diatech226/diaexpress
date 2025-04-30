@@ -2,8 +2,8 @@ const templateLib = require("./template");
 const admin = require("firebase-admin");
 const addToWallet = require("../../common").addToWallet;
 const UpdateBooking = require("../../common").UpdateBooking;
-const { v4: uuidv4 } = require("uuid");
-const { Client, Environment } = require("square");
+const {v4: uuidv4} = require("uuid");
+const {Client, Environment} = require("square");
 
 module.exports.render_checkout = async function(request, response) {
   const config = (await admin.database().ref("payment_settings/squareup").once("value")).val();
@@ -17,11 +17,11 @@ module.exports.render_checkout = async function(request, response) {
   const server_url = refr ? ((refr.includes("bookings") || refr.includes("addbookings") || refr.includes("userwallet"))? refr.substring(0, refr.length - refr.split("/")[refr.split("/").length - 1].length) : refr) : request.protocol + "://" + request.get("host") + "/";
 
   response.send(
-    templateLib.getTemplate(APPLICATION_ID, LOCATION_ID, order_id, amount, currency, server_url, config.testing ),
+      templateLib.getTemplate(APPLICATION_ID, LOCATION_ID, order_id, amount, currency, server_url, config.testing ),
   );
 };
 
-module.exports.add_card = async(req, res) => {
+module.exports.add_card = async (req, res) => {
   const config = (await admin.database().ref("payment_settings/squareup").once("value")).val();
   const LOCATION_ID = config.LOCATION_ID;
   const ACCESS_TOKEN = config.ACCESS_TOKEN;
@@ -56,14 +56,14 @@ module.exports.add_card = async(req, res) => {
         if (data.payment) {
           res.send(data.payment);
         } else {
-          res.send({ error: true });
+          res.send({error: true});
         }
       } else {
-        res.send({ error: true });
+        res.send({error: true});
       }
     }
   } catch (error) {
-    res.send({ error: true });
+    res.send({error: true});
   }
 };
 

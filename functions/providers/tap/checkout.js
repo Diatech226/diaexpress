@@ -20,8 +20,8 @@ module.exports.render_checkout = async function(request, response) {
       refr.includes("addbookings") ||
       refr.includes("userwallet") ?
       refr.substring(
-        0,
-        refr.length - refr.split("/")[refr.split("/").length - 1].length,
+          0,
+          refr.length - refr.split("/")[refr.split("/").length - 1].length,
       ) :
       refr :
     request.protocol + "://" + request.get("host") + "/";
@@ -65,24 +65,24 @@ module.exports.render_checkout = async function(request, response) {
     },
     body: JSON.stringify(body),
   })
-    .then((res) => res.json())
-    .then((json) => {
-      if ( json && json.id ) {
-        admin
-          .database().ref("/tap/" + order_id).set({
-            amount: request.body.amount,
-            tapId: json.id,
-          });
-        response.redirect(json.transaction.url);
-      } else {
+      .then((res) => res.json())
+      .then((json) => {
+        if ( json && json.id ) {
+          admin
+              .database().ref("/tap/" + order_id).set({
+                amount: request.body.amount,
+                tapId: json.id,
+              });
+          response.redirect(json.transaction.url);
+        } else {
+          response.redirect("/cancel");
+        }
+        return true;
+      })
+      .catch((error) => {
+        console.log(error);
         response.redirect("/cancel");
-      }
-      return true;
-    })
-    .catch((error) => {
-      console.log(error);
-      response.redirect("/cancel");
-    });
+      });
 };
 
 module.exports.process_checkout = async function(req, res) {
@@ -94,78 +94,78 @@ module.exports.process_checkout = async function(req, res) {
   const transaction_id = req.query.tap_id;
   if (order_id.length > 0) {
     admin
-      .database()
-      .ref("tap")
-      .child(order_id)
-      .once("value", (tapsnap) => {
-        const checkoutdata = tapsnap.val();
-        const amount = checkoutdata.amount;
-        if (
-          checkoutdata &&
+        .database()
+        .ref("tap")
+        .child(order_id)
+        .once("value", (tapsnap) => {
+          const checkoutdata = tapsnap.val();
+          const amount = checkoutdata.amount;
+          if (
+            checkoutdata &&
           checkoutdata.tapId === transaction_id
-        ) {
-          const options = {
-            method: "GET",
-            url: `https://api.tap.company/v2/charges/${transaction_id}`,
-            headers: {
-              "Content-Type": "application/json",
-              "Accept": "application/json",
-              "Authorization": "Bearer " + secret_key,
-            },
-          };
-          request(options, (error, response) => {
-            if (error) {
-              res.redirect("/cancel");
-            }
-            if (response.body.length > 1 ) {
-              const json = JSON.parse(response.body);
-              if (json && json.id) {
-                const transaction_id = json.id;
-                admin
-                  .database()
-                  .ref("bookings")
-                  .child(order_id)
-                  .once("value", (snapshot) => {
-                    if (snapshot.val()) {
-                      const bookingData = snapshot.val();
-                      UpdateBooking(
-                        bookingData,
-                        order_id,
-                        transaction_id,
-                        "tap",
-                      );
-                      res.redirect(
-                        `/success?order_id=${order_id}&amount=${amount}&transaction_id=${transaction_id}`,
-                      );
-                      admin.database().ref("tap").child(order_id).remove();
-                    } else {
-                      if (order_id.startsWith("wallet")) {
-                        addToWallet(
-                          order_id.substr(7, order_id.length - 12),
-                          amount,
-                          order_id,
-                          transaction_id,
-                        );
-                        res.redirect(
-                          `/success?order_id=${order_id}&amount=${amount}&transaction_id=${transaction_id}`,
-                        );
-                        admin.database().ref("tap").child(order_id).remove();
-                      } else {
-                        res.redirect("/cancel");
-                      }
-                    }
-                  });
+          ) {
+            const options = {
+              method: "GET",
+              url: `https://api.tap.company/v2/charges/${transaction_id}`,
+              headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                "Authorization": "Bearer " + secret_key,
+              },
+            };
+            request(options, (error, response) => {
+              if (error) {
+                res.redirect("/cancel");
+              }
+              if (response.body.length > 1 ) {
+                const json = JSON.parse(response.body);
+                if (json && json.id) {
+                  const transaction_id = json.id;
+                  admin
+                      .database()
+                      .ref("bookings")
+                      .child(order_id)
+                      .once("value", (snapshot) => {
+                        if (snapshot.val()) {
+                          const bookingData = snapshot.val();
+                          UpdateBooking(
+                              bookingData,
+                              order_id,
+                              transaction_id,
+                              "tap",
+                          );
+                          res.redirect(
+                              `/success?order_id=${order_id}&amount=${amount}&transaction_id=${transaction_id}`,
+                          );
+                          admin.database().ref("tap").child(order_id).remove();
+                        } else {
+                          if (order_id.startsWith("wallet")) {
+                            addToWallet(
+                                order_id.substr(7, order_id.length - 12),
+                                amount,
+                                order_id,
+                                transaction_id,
+                            );
+                            res.redirect(
+                                `/success?order_id=${order_id}&amount=${amount}&transaction_id=${transaction_id}`,
+                            );
+                            admin.database().ref("tap").child(order_id).remove();
+                          } else {
+                            res.redirect("/cancel");
+                          }
+                        }
+                      });
+                } else {
+                  res.redirect("/cancel");
+                }
               } else {
                 res.redirect("/cancel");
               }
-            } else {
-              res.redirect("/cancel");
-            }
-          });
-        } else {
-          res.redirect("/cancel");
-        }
-      });
+            });
+          } else {
+            res.redirect("/cancel");
+          }
+        });
   } else {
     res.redirect("/cancel");
   }

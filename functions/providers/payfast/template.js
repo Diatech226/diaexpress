@@ -1,5 +1,5 @@
 function getTemplate(
-  checkout_url, myData,
+    checkout_url, myData,
 ) {
   let htmlForm = `<form action="${checkout_url}" method="post" name="payfast">`;
   for (const key in myData) {
