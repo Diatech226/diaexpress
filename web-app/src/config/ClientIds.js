@@ -1,2 +1,2 @@
 
-export const webClientId = "384215342468-e0pfg1vmuqs49oec5mbuqh21oe856mml.apps.googleusercontent.com"
+export const webClientId = "384215342468-l6gvvq7eit27v4e833v4cifh73df7pab.apps.googleusercontent.com"
