@@ -806,7 +806,7 @@ exports.check_user_exists = onRequest( async (request, response) => {
   const db = getDatabase();
   const settingdata = await db.ref("settings").once("value");
   const settings = settingdata.val();
-  const allowedOrigins = ["https://" + config.firebaseProjectId + ".web.app", settings.CompanyWebsite, "http://localhost:3000"];
+  const allowedOrigins = ["https://" + config.firebaseProjectId + ".web.app", settings.CompanyWebsite, "http://localhost:3000", "https://dia-express.com",];
   const origin = request.headers.origin;
   if (allowedOrigins.includes(origin)) {
     response.set("Access-Control-Allow-Origin", origin);
