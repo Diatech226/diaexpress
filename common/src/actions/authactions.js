@@ -139,7 +139,7 @@ export const validateReferer = async (referralId) => {
   return json;
 };
 
-/*export const checkUserExists = async (data) => {
+export const checkUserExists = async (data) => {
   const {
     config
   } = firebase;
@@ -161,7 +161,7 @@ export const validateReferer = async (referralId) => {
   const json = await response.json();
   return json;
 };
-*/export const checkUserExists = async (data) => {
+/*export const checkUserExists = async (data) => {
   const { config } = firebase;
 
   let url = `https://${config.projectId}.cloudfunctions.net/check_user_exists`;
@@ -180,7 +180,7 @@ export const validateReferer = async (referralId) => {
   const json = await response.json();
   return json;
 };
-
+*/
 export const mainSignUp = async (regData) => {
   const {
     config
