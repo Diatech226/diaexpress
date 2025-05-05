@@ -44,8 +44,8 @@ export const fetchPaymentMethods = () => (dispatch) => {
           });
     } else { 
         const settings = store.getState().settingsdata.settings;
-        let host = window && window.location && settings.CompanyWebsite === window.location.origin? window.location.origin : `https://${config.projectId}.web.app`
-        let url = `${host}/get_providers`;
+        let host = window && window.location && settings.CompanyWebsite === window.location.origin? window.location.origin : `https:/`
+        let url = `${host}/get_providers-uv5fffc44a-uc.a.run.app`;
         fetch(url, {
             method: 'GET',
             headers: {

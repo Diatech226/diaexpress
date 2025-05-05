@@ -99,7 +99,7 @@ export const convertLanguage = async (word, userLangLocale)=>{
                     if(langLocaleArr[j].langLocale === defLangLocale){
                         update(langEditRef(langLocaleArr[j].id),{[langKey]:word})
                     }else{
-                        const response = await fetch(`https://us-central1-${config.projectId}.cloudfunctions.net/gettranslation?str=${word}&from=${defLangLocale}&to=${langLocaleArr[j].langLocale}`, {
+                        const response = await fetch(`https://gettranslation-uv5fffc44a-uc.a.run.app?str=${word}&from=${defLangLocale}&to=${langLocaleArr[j].langLocale}`, {
                             method: 'GET',
                             headers: {
                               'Content-Type': 'application/json'

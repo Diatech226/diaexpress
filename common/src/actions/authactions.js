@@ -89,8 +89,8 @@ export const fetchUser = () => (dispatch) => {
           }
 
           const settings = store.getState().settingsdata.settings;
-          let host = window && window.location && settings.CompanyWebsite === window.location.origin? window.location.origin : `https://${config.projectId}.web.app`
-          let url = `${host}/check_auth_exists`;
+          let host = window && window.location && settings.CompanyWebsite === window.location.origin? window.location.origin : `https://`
+          let url = `${host}/check_auth_exists-uv5fffc44a-uc.a.run.app`;
           const response = await fetch(url, {
             method: 'POST',
             headers: {
@@ -126,7 +126,7 @@ export const validateReferer = async (referralId) => {
   const {
     config
   } = firebase;
-  const response = await fetch(`https://${config.projectId}.web.app/validate_referrer`, {
+  const response = await fetch(`https://validate_referrer-uv5fffc44a-uc.a.run.app`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -145,8 +145,8 @@ export const checkUserExists = async (data) => {
   } = firebase;
 
   const settings = store.getState().settingsdata.settings;
-  let host = window && window.location && settings.CompanyWebsite === window.location.origin? window.location.origin : `https://${config.projectId}.web.app` || `http://localhost:3000`
-  let url = `${host}/check_user_exists`;
+  let host = window && window.location && settings.CompanyWebsite === window.location.origin? window.location.origin : `https:/` || `http://localhost:3000`
+  let url = `${host}/us-central1/check_user_exists-uv5fffc44a-uc.a.run.app`;
   const response = await fetch(url, {
     method: 'POST',
     headers: {
@@ -164,7 +164,7 @@ export const checkUserExists = async (data) => {
 /*export const checkUserExists = async (data) => {
   const { config } = firebase;
 
-  let url = `https://${config.projectId}.cloudfunctions.net/check_user_exists`;
+  let url = `https://cloudfunctions.net/check_user_exists`;
 
   const response = await fetch(url, {
     method: 'POST',
@@ -185,7 +185,7 @@ export const mainSignUp = async (regData) => {
   const {
     config
   } = firebase;
-  let url = `https://${config.projectId}.web.app/user_signup`;
+  let url = `https://user_signup-uv5fffc44a-uc.a.run.app`;
   const response = await fetch(url, {
     method: 'POST',
     headers: {
@@ -203,7 +203,7 @@ export const updateProfileWithEmail = (profileData) => async (dispatch) => {
   } = firebase;
   try{
     const settings = store.getState().settingsdata.settings;
-    let host = window && window.location && settings.CompanyWebsite === window.location.origin? window.location.origin : `https://${config.projectId}.web.app`
+    let host = window && window.location && settings.CompanyWebsite === window.location.origin? window.location.origin : `https:/`
     let url = `${host}/update_user_email`;
     const response = await fetch(url, {
       method: 'POST',
@@ -597,7 +597,7 @@ export const requestMobileOtp = (mobile) => async (dispatch) => {
   }); 
 
   const settings = store.getState().settingsdata.settings;
-  let host = window && window.location && settings.CompanyWebsite === window.location.origin? window.location.origin : `https://${config.projectId}.web.app`
+  let host = window && window.location && settings.CompanyWebsite === window.location.origin? window.location.origin : `https:/`
   let url = `${host}/request_mobile_otp`;
   try{
     const response = await fetch(url, {
@@ -635,8 +635,8 @@ export const verifyMobileOtp = (mobile, otp) => async (dispatch) => {
   };
   try{
     const settings = store.getState().settingsdata.settings;
-    let host = window && window.location && settings.CompanyWebsite === window.location.origin? window.location.origin : `https://${config.projectId}.web.app`
-    let url = `${host}/verify_mobile_otp`;
+    let host = window && window.location && settings.CompanyWebsite === window.location.origin? window.location.origin : `https:/`
+    let url = `${host}/verify_mobile_otp-uv5fffc44a-uc.a.run.app`;
     const response = await fetch(url, {
       method: 'POST',
       headers: {
@@ -685,8 +685,8 @@ export const updateAuthMobile = async ( mobile, otp) => {
   };
 
   const settings = store.getState().settingsdata.settings;
-  let host = window && window.location && settings.CompanyWebsite === window.location.origin ? window.location.origin : `https://${config.projectId}.web.app`
-  let url = `${host}/update_auth_mobile`;
+  let host = window && window.location && settings.CompanyWebsite === window.location.origin ? window.location.origin : `https:/`
+  let url = `${host}/update_auth_mobile-uv5fffc44a-uc.a.run.app`;
   try{
     const response = await fetch(url, {
       method: 'POST',

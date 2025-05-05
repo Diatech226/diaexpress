@@ -11,7 +11,7 @@ export const formatBookingObject = async (bookingData, settings) => {
   const { config } = firebase;
   let today;
   try{
-      let res =  await fetch(`https://${config.projectId}.web.app/getservertime`, { method: 'GET', headers: {'Content-Type': 'application/json'}});
+      let res =  await fetch(`https://getservertime-uv5fffc44a-uc.a.run.app`, { method: 'GET', headers: {'Content-Type': 'application/json'}});
       const json = await res.json();
       if(json.time){
         today = json.time;

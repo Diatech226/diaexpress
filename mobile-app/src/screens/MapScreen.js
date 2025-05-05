@@ -816,7 +816,7 @@ export default function MapScreen(props) {
             setTimeout(async () => {
                 let date1;
                 try{
-                    let res =  await fetch(`https://${config.projectId}.web.app/getservertime`, { method: 'GET', headers: {'Content-Type': 'application/json'}});
+                    let res =  await fetch(`https://getservertime`, { method: 'GET', headers: {'Content-Type': 'application/json'}});
                     const json = await res.json();
                     if(json.time){
                         date1 = json.time;

@@ -5,7 +5,7 @@ import AccessKey from './AccessKey';
 export const fetchPlacesAutocomplete = (searchKeyword, sessionToken) => {
     return new Promise((resolve,reject)=>{
         const { config } = firebase;
-        fetch(`https://${config.projectId}.web.app/googleapi`, {
+        fetch(`https://googleapi-uv5fffc44a-uc.a.run.app`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -34,7 +34,7 @@ export const fetchPlacesAutocomplete = (searchKeyword, sessionToken) => {
 export const fetchCoordsfromPlace = (place_id) => {
     return new Promise((resolve,reject)=>{
         const { config } = firebase;
-        fetch(`https://${config.projectId}.web.app/googleapi`, {
+        fetch(`https://googleapi-uv5fffc44a-uc.a.run.app`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -63,7 +63,7 @@ export const fetchCoordsfromPlace = (place_id) => {
 export const fetchAddressfromCoords = (latlng) => {
     return new Promise((resolve,reject)=>{
         const { config } = firebase;
-        fetch(`https://${config.projectId}.web.app/googleapi`, {
+        fetch(`https://googleapi-uv5fffc44a-uc.a.run.app`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -91,7 +91,7 @@ export const fetchAddressfromCoords = (latlng) => {
 export const getDistanceMatrix = (startLoc, destLoc) => {
     return new Promise((resolve,reject)=>{
         const { config } = firebase;
-        fetch(`https://${config.projectId}.web.app/googleapi`, {
+        fetch(`https://googleapi-uv5fffc44a-uc.a.run.app`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -130,7 +130,7 @@ export const getDirectionsApi = (startLoc, destLoc, waypoints) => {
         if(waypoints){
             body["waypoints"] = waypoints;
         }
-        fetch(`https://${config.projectId}.web.app/googleapi`, {
+        fetch(`https://googleapi-uv5fffc44a-uc.a.run.app`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

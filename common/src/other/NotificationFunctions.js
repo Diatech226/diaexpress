@@ -7,8 +7,8 @@ export const RequestPushMsg = (token, data) => {
     } = firebase;
     
     const settings = store.getState().settingsdata.settings;
-    let host = window && window.location && settings.CompanyWebsite === window.location.origin? window.location.origin : `https://${config.projectId}.web.app`
-    let url = `${host}/send_notification`;
+    let host = window && window.location && settings.CompanyWebsite === window.location.origin? window.location.origin : `https:/`
+    let url = `${host}/send_notification-uv5fffc44a-uc.a.run.app`;
 
     fetch(url, {
         method: 'POST',
