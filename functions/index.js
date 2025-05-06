@@ -801,61 +801,38 @@ exports.send_notification = functions.https.onRequest(async (req, res) => {
   }
 });
 
+exports.check_user_exists = functions.https.onRequest((request, response) => {
+  response.set("Access-Control-Allow-Origin", "*");
+  response.set("Access-Control-Allow-Headers", "Content-Type");
+  let arr = [];
 
-exports.check_user_exists = onRequest(async (request, response) => {
-  const db = getDatabase();
-
-  // Récupérer les paramètres pour l'origine autorisée
-  const settingData = await db.ref("settings").once("value");
-  const settings = settingData.val();
-
-  const allowedOrigins = [
-    `https://${config.firebaseProjectId}.web.app`,
-    settings.CompanyWebsite,
-    "http://localhost:3000",
-    "https://dia-express.com",
-    "https://www.dia-express.com",
-  ];
-
-  const origin = request.headers.origin;
-
-  if (allowedOrigins.includes(origin)) {
-    response.set("Access-Control-Allow-Origin", origin);
-    response.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  }
-
-  // Gestion pré-vol (CORS preflight)
-  if (request.method === "OPTIONS") {
-    response.set("Access-Control-Allow-Methods", "POST");
-    response.set("Access-Control-Max-Age", "3600");
-    response.status(204).send();
-    return;
-  }
-
-  // Authentification
-  const user = await rgf.validateBasicAuth(request.headers.authorization, config);
-  if (!user) {
-    return response.status(401).json({ error: "Unauthorized API call" });
-  }
-
-  const arr = [];
-  const { email, mobile } = request.body;
-
-  if (!email && !mobile) {
-    return response.status(400).json({ error: "Email or Mobile not found." });
-  }
-
-  if (email) arr.push({ email });
-  if (mobile) arr.push({ phoneNumber: mobile });
-
-  try {
-    const getUsersResult = await admin.auth().getUsers(arr);
-    return response.status(200).json({ users: getUsersResult.users });
-  } catch (error) {
-    console.error("Error fetching users:", error);
-    return response.status(500).json({ error: error.message || "Internal Server Error" });
+  if (request.body.email || request.body.mobile) {
+      if (request.body.email) {
+          arr.push({ email: request.body.email });
+      }
+      if (request.body.mobile) {
+          arr.push({ phoneNumber: request.body.mobile });
+      }
+      try{
+          admin
+          .auth()
+          .getUsers(arr)
+          .then((getUsersResult) => {
+              response.send({ users: getUsersResult.users });
+              return true;
+          })
+          .catch((error) => {
+              response.send({ error: error });
+          });
+      }catch(error){
+          response.send({ error: error });
+      }
+  } else {
+      response.send({ error: "Email or Mobile not found." });
   }
 });
+
+
 /*exports.check_user_exists = onRequest( async (request, response) => {
   const db = getDatabase();
   const settingdata = await db.ref("settings").once("value");
@@ -1075,7 +1052,8 @@ exports.check_auth_exists = onRequest(async (request, response) => {
   const db = getDatabase();
   const settingdata = await db.ref("settings").once("value");
   const settings = settingdata.val();
-  const allowedOrigins = ["https://" + config.firebaseProjectId + ".web.app", settings.CompanyWebsite];
+  const allowedOrigins = ["https://" + config.firebaseProjectId + ".web.app", settings.CompanyWebsite, "http://localhost:3000", "www.dia-express.com", "https://dia-express.com"]
+  
   const origin = request.headers.origin;
   if (allowedOrigins.includes(origin)) {
     response.set("Access-Control-Allow-Origin", origin);
@@ -1135,7 +1113,7 @@ exports.verify_mobile_otp = onRequest(async (request, response) => {
   const db = getDatabase();
   const settingdata = await db.ref("settings").once("value");
   const settings = settingdata.val();
-  const allowedOrigins = ["https://" + config.firebaseProjectId + ".web.app", settings.CompanyWebsite];
+  const allowedOrigins = ["https://" + config.firebaseProjectId + ".web.app", settings.CompanyWebsite, "http://localhost:3000", "www.dia-express.com", "https://dia-express.com"];
   const origin = request.headers.origin;
   if (allowedOrigins.includes(origin)) {
     response.set("Access-Control-Allow-Origin", origin);
@@ -1186,7 +1164,7 @@ exports.update_auth_mobile = onRequest(async (request, response) => {
   const db = getDatabase();
   const settingdata = await db.ref("settings").once("value");
   const settings = settingdata.val();
-  const allowedOrigins = ["https://" + config.firebaseProjectId + ".web.app", settings.CompanyWebsite];
+  const allowedOrigins = ["https://" + config.firebaseProjectId + ".web.app", settings.CompanyWebsite, "http://localhost:3000", "www.dia-express.com", "https://dia-express.com"];
   const origin = request.headers.origin;
   if (allowedOrigins.includes(origin)) {
     response.set("Access-Control-Allow-Origin", origin);
