@@ -1065,6 +1065,49 @@ exports.checksmtpdetails = onRequest(async (request, response) => {
 });
 
 exports.check_auth_exists = onRequest(async (request, response) => {
+  const db = getDatabase(getApp());
+  const settingSnap = await db.ref("settings").once("value");
+  const settings = settingSnap.val();
+
+  const allowedOrigins = [
+    `https://${config.firebaseProjectId}.web.app`,
+    settings?.CompanyWebsite,
+    "http://localhost:3000",
+    "https://www.dia-express.com",
+    "https://dia-express.com"
+  ];
+
+  const origin = request.headers.origin;
+
+  // Gestion CORS pour toutes les requêtes
+  if (origin && allowedOrigins.includes(origin)) {
+    response.setHeader("Access-Control-Allow-Origin", origin);
+  }
+  response.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  response.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+
+  // Réponse à la requête preflight CORS
+  if (request.method === "OPTIONS") {
+    response.status(204).send(""); // Répond sans corps
+    return;
+  }
+
+  try {
+    const data = JSON.parse(request.body.data);
+    const userData = await rgf.formatUserProfile(request, config, data);
+    
+    if (userData.uid) {
+      await db.ref("users/" + userData.uid).set(userData);
+    }
+
+    response.status(200).send(userData);
+  } catch (error) {
+    console.error("Erreur dans check_auth_exists:", error);
+    response.status(500).send({ error: "Erreur serveur", details: error.message });
+  }
+});
+/*
+exports.check_auth_exists = onRequest(async (request, response) => {
   const db = getDatabase();
   const settingdata = await db.ref("settings").once("value");
   const settings = settingdata.val();
@@ -1082,7 +1125,7 @@ exports.check_auth_exists = onRequest(async (request, response) => {
   }
   response.send(userData);
 });
-
+*/
 
 exports.request_mobile_otp = onRequest(async (request, response) => {
   const db = getDatabase();
