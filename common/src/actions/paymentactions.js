@@ -44,7 +44,7 @@ export const fetchPaymentMethods = () => (dispatch) => {
           });
     } else { 
         const settings = store.getState().settingsdata.settings;
-        let host = window && window.location && settings.CompanyWebsite === window.location.origin? window.location.origin : `https:/`
+        let host = window && window.location && settings.CompanyWebsite === window.location.origin? window.location.origin : `https:/`  || 'https://dia-express.com' || 'localhost:3000'|| 'www.dia-express.com'
         let url = `${host}/get_providers-uv5fffc44a-uc.a.run.app`;
         fetch(url, {
             method: 'GET',

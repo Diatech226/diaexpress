@@ -89,7 +89,7 @@ export const fetchUser = () => (dispatch) => {
           }
 
           const settings = store.getState().settingsdata.settings;
-          let host = window && window.location && settings.CompanyWebsite === window.location.origin? window.location.origin : `https://`
+          let host = window && window.location && settings.CompanyWebsite === window.location.origin? window.location.origin : `https:/`
           let url = `${host}/check_auth_exists-uv5fffc44a-uc.a.run.app`;
           const response = await fetch(url, {
             method: 'POST',
@@ -146,7 +146,7 @@ export const checkUserExists = async (data) => {
 
   const settings = store.getState().settingsdata.settings;
   let host = window && window.location && settings.CompanyWebsite === window.location.origin? window.location.origin : `https:/` || `http://localhost:3000`
-  let url = `${host}/us-central1/check_user_exists-uv5fffc44a-uc.a.run.app`;
+  let url = `${host}/check_user_exists-uv5fffc44a-uc.a.run.app`;
   const response = await fetch(url, {
     method: 'POST',
     headers: {
@@ -203,8 +203,8 @@ export const updateProfileWithEmail = (profileData) => async (dispatch) => {
   } = firebase;
   try{
     const settings = store.getState().settingsdata.settings;
-    let host = window && window.location && settings.CompanyWebsite === window.location.origin? window.location.origin : `https:/`
-    let url = `${host}/update_user_email`;
+    let host = window && window.location && settings.CompanyWebsite === window.location.origin? window.location.origin : `https:/`||'https://dia-express.com'
+    let url = `${host}/update_user_email-uv5fffc44a-uc.a.run.app`;
     const response = await fetch(url, {
       method: 'POST',
       headers: {
@@ -635,7 +635,7 @@ export const verifyMobileOtp = (mobile, otp) => async (dispatch) => {
   };
   try{
     const settings = store.getState().settingsdata.settings;
-    let host = window && window.location && settings.CompanyWebsite === window.location.origin? window.location.origin : `https:/`
+    let host = window && window.location && settings.CompanyWebsite === window.location.origin? window.location.origin : `https:/` || 'https://dia-express.com' || 'localhost:3000'|| 'www.dia-express.com'
     let url = `${host}/verify_mobile_otp-uv5fffc44a-uc.a.run.app`;
     const response = await fetch(url, {
       method: 'POST',

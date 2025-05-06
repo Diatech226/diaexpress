@@ -800,37 +800,53 @@ exports.send_notification = functions.https.onRequest(async (req, res) => {
     res.status(500).send({error: "Internal server error."});
   }
 });
-
 exports.check_user_exists = functions.https.onRequest((request, response) => {
-  response.set("Access-Control-Allow-Origin", "*");
-  response.set("Access-Control-Allow-Headers", "Content-Type");
+  const allowedOrigins = [
+    'https://www.dia-express.com',
+    'http://localhost:3000',
+    'https://diaapp-bb143.web.app'
+  ];
+
+  const origin = request.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    response.set("Access-Control-Allow-Origin", origin);
+  }
+
+  response.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  response.set("Access-Control-Allow-Methods", "POST, OPTIONS");
+  response.set("Vary", "Origin");
+
+  // Gérer la requête preflight (OPTIONS)
+  if (request.method === 'OPTIONS') {
+    response.status(204).send('');
+    return;
+  }
+
   let arr = [];
 
   if (request.body.email || request.body.mobile) {
-      if (request.body.email) {
-          arr.push({ email: request.body.email });
-      }
-      if (request.body.mobile) {
-          arr.push({ phoneNumber: request.body.mobile });
-      }
-      try{
-          admin
-          .auth()
-          .getUsers(arr)
-          .then((getUsersResult) => {
-              response.send({ users: getUsersResult.users });
-              return true;
-          })
-          .catch((error) => {
-              response.send({ error: error });
-          });
-      }catch(error){
-          response.send({ error: error });
-      }
+    if (request.body.email) {
+      arr.push({ email: request.body.email });
+    }
+    if (request.body.mobile) {
+      arr.push({ phoneNumber: request.body.mobile });
+    }
+
+    admin
+      .auth()
+      .getUsers(arr)
+      .then((getUsersResult) => {
+        response.send({ users: getUsersResult.users });
+      })
+      .catch((error) => {
+        response.status(500).send({ error: error.message });
+      });
+
   } else {
-      response.send({ error: "Email or Mobile not found." });
+    response.status(400).send({ error: "Email or Mobile not found." });
   }
 });
+
 
 
 /*exports.check_user_exists = onRequest( async (request, response) => {
