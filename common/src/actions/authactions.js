@@ -280,7 +280,7 @@ export const checkUserExists = async (data) => {
   const json = await response.json();
   return json;
 };
-*/
+
 export const mainSignUp = async (regData) => {
   const {
     config
@@ -416,7 +416,91 @@ export const googleLogin = (idToken, accessToken) => (dispatch) => {
         payload: error
       });
     });
-}
+}*/
+export const mainSignUp = async (regData) => {
+  const { config } = firebase;
+  try {
+    let url = 'https://user_signup-uv5fffc44a-uc.a.run.app';
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ regData })
+    });
+    if (!response.ok) throw new Error('Network response was not ok');
+    const res = await response.json();
+    return res;
+  } catch (error) {
+    console.error('Error in mainSignUp:', error);
+    return { success: false, error };
+  }
+};
+
+export const updateProfileWithEmail = async (profileData) => {
+  const { config } = firebase;
+  try {
+    let url = 'https://update-user-email-uv5fffc44a-uc.a.run.app';
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Basic ' + base64.encode(config.projectId + ':' + AccessKey)
+      },
+      body: JSON.stringify(profileData)
+    });
+    if (!response.ok) throw new Error('Network response was not ok');
+    const result = await response.json();
+    if (result.error) throw new Error(result.error);
+    return { success: true, data: result };
+  } catch (error) {
+    console.error('Error in updateProfileWithEmail:', error);
+    return { success: false, error: error.message };
+  }
+};
+
+export const googleLogin = (idToken, accessToken) => async (dispatch) => {
+  const { auth, googleCredential } = firebase;
+  dispatch({ type: USER_SIGN_IN, payload: null });
+  try {
+    const credential = googleCredential(idToken, accessToken);
+    const user = await signInWithCredential(auth, credential);
+    dispatch({ type: USER_SIGN_IN_SUCCESS, payload: user });
+  } catch (error) {
+    console.error('Google login failed:', error);
+    dispatch({ type: USER_SIGN_IN_FAILED, payload: error.message });
+  }
+};
+
+export const saveAddresses = async (uid, location, name) => {
+  const { singleUserRef } = firebase;
+  try {
+    const addressRef = child(singleUserRef(uid), 'savedAddresses');
+    const savedAdd = await get(addressRef);
+    let addresses = savedAdd.exists() ? savedAdd.val() : {};
+    const match = Object.values(addresses).find(entry => entry.name === name);
+    if (match) {
+      await update(child(addressRef, match.key), {
+        description: location.add,
+        lat: location.lat,
+        lng: location.lng,
+        count: 1,
+        name
+      });
+    } else {
+      await push(addressRef, {
+        description: location.add,
+        lat: location.lat,
+        lng: location.lng,
+        count: 1,
+        name
+      });
+    }
+  } catch (error) {
+    console.error('Error saving address:', error);
+  }
+};
+
 
 export const appleSignIn = (credentialData) => (dispatch) => {
 
@@ -622,8 +706,7 @@ export const fetchWalletHistory = () => (dispatch) => {
       });
     }
   });
-};
-export const fetchUserWalletHistory = (userId) => (dispatch) => {
+};export const fetchUserWalletHistory = (userId) => (dispatch) => {
   const {
     auth,
     walletHistoryRef
@@ -631,12 +714,12 @@ export const fetchUserWalletHistory = (userId) => (dispatch) => {
 
   const uid = userId;
 
-  onValue(walletHistoryRef(uid) , snapshot => {
+  onValue(walletHistoryRef(uid), snapshot => {
     const data = snapshot.val(); 
     if(data){
       const arr = Object.keys(data).map(i => {
-        data[i].id = i
-        return data[i]
+        data[i].id = i;
+        return data[i];
       });
       dispatch({
         type: UPDATE_USER_WALLET_HISTORY,
@@ -653,59 +736,64 @@ export const fetchUserWalletHistory = (userId) => (dispatch) => {
 
 export const sendResetMail = (email) => async (dispatch) => {
   const {
-    authRef
+    auth
   } = firebase;
 
   dispatch({
     type: SEND_RESET_EMAIL,
     payload: email
   });
-  sendPasswordResetEmail(authRef(), email).then(function() {
-    console.log('Email send successfuly');
-  }).catch(function (error) {
-      dispatch({
-        type: SEND_RESET_EMAIL_FAILED,
-        payload: {code: store.getState().languagedata.defaultLanguage.auth_error, message: store.getState().languagedata.defaultLanguage.not_registred }
-      });
-  });
+
+  try {
+    await sendPasswordResetEmail(auth, email);
+    console.log('Email sent successfully');
+  } catch (error) {
+    dispatch({
+      type: SEND_RESET_EMAIL_FAILED,
+      payload: {
+        code: store.getState().languagedata.defaultLanguage.auth_error,
+        message: store.getState().languagedata.defaultLanguage.not_registered
+      }
+    });
+  }
 };
 
 export const verifyEmailPassword = (email, pass) => async (dispatch) => {
   const {
-    authRef
+    auth
   } = firebase;
 
-  signInWithEmailAndPassword(authRef(), email, pass)
-    .then((user) => {
-      //OnAuthStateChange takes care of Navigation
-    })
-    .catch((error) => {
-      dispatch({
-        type: USER_SIGN_IN_FAILED,
-        payload: error
-      });
+  try {
+    await signInWithEmailAndPassword(auth, email, pass);
+  } catch (error) {
+    dispatch({
+      type: USER_SIGN_IN_FAILED,
+      payload: error
     });
-}
+  }
+};
 
 export const requestMobileOtp = (mobile) => async (dispatch) => {
   const {
     config
   } = firebase;
+
   dispatch({
     type: REQUEST_OTP,
     payload: true
-  }); 
+  });
 
   const settings = store.getState().settingsdata.settings;
-  let host = window && window.location && settings.CompanyWebsite === window.location.origin? window.location.origin : `https:/`
+  let host = window && window.location && settings.CompanyWebsite === window.location.origin ? window.location.origin : `https:/`;
   let url = `${host}/request_mobile_otp`;
-  try{
+
+  try {
     const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ mobile: mobile })
+      body: JSON.stringify({ mobile })
     });
     const result = await response.json();
     if(result.success){
@@ -713,16 +801,17 @@ export const requestMobileOtp = (mobile) => async (dispatch) => {
         type: REQUEST_OTP_SUCCESS,
         payload: true
       });
-    }else{
+    } else {
       dispatch({
         type: REQUEST_OTP_FAILED,
         payload: result.error
       });
     }
-  }catch(error){
+  } catch (error) {
     console.log(error);
   }
-}
+};
+
 
 export const verifyMobileOtp = (mobile, otp) => async (dispatch) => {
   const {
