@@ -33,6 +33,106 @@ export const fetchUser = () => (dispatch) => {
     type: FETCH_USER,
     payload: null
   });
+
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      onValue(singleUserRef(user.uid), async (snapshot) => {
+        if (snapshot.val()) {
+          let profile = snapshot.val();
+          profile.uid = user.uid;
+          dispatch({
+            type: FETCH_USER_SUCCESS,
+            payload: profile
+          });
+        } else {
+          let data = {
+            uid: user.uid,
+            mobile: '',
+            email: '',
+            firstName: '',
+            lastName: '',
+            verifyId: ''
+          };
+
+          if (user.providerData.length === 0 && user.email) {
+            data.email = user.email;
+          }
+          if (user.providerData.length > 0 && user.phoneNumber) {
+            data.mobile = user.phoneNumber;
+          }
+          if (user.providerData.length > 0) {
+            const provideData = user.providerData[0];
+            if (provideData.providerId === 'phone') {
+              data.mobile = provideData.phoneNumber;
+            }
+            if (['google.com', 'apple.com'].includes(provideData.providerId)) {
+              if (provideData.email) data.email = provideData.email;
+              if (provideData.phoneNumber) data.mobile = provideData.phoneNumber;
+              if (provideData.displayName) {
+                const names = provideData.displayName.split(' ');
+                data.firstName = names[0] || '';
+                data.lastName = names[1] || '';
+              }
+              if (provideData.photoURL) data.profile_image = provideData.photoURL;
+            }
+          }
+          if (user.providerData.length > 0 && user.verifyId) {
+            data.verifyId = user.verifyId;
+          }
+
+          const settings = store.getState().settingsdata.settings;
+          const host = window?.location?.origin === settings.CompanyWebsite ? window.location.origin : 'https://dia-express.com';
+          const url = `${host}/check_auth_exists-uv5fffc44a-uc.a.run.app`;
+
+          try {
+            const response = await fetch(url, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Basic ' + base64.encode(config.projectId + ':' + AccessKey)
+              },
+              body: JSON.stringify({ data: JSON.stringify(data) })
+            });
+            if (!response.ok) throw new Error('Network response was not ok');
+            const json = await response.json();
+
+            if (json.uid) {
+              dispatch({
+                type: FETCH_USER_SUCCESS,
+                payload: json
+              });
+            } else {
+              throw new Error(json.error || 'User not found');
+            }
+          } catch (error) {
+            console.error('Error fetching user:', error.message);
+            dispatch({
+              type: FETCH_USER_FAILED,
+              payload: { code: 'auth_error', message: error.message }
+            });
+          }
+        }
+      });
+    } else {
+      dispatch({
+        type: FETCH_USER_FAILED,
+        payload: { code: 'auth_error', message: 'User not logged in' }
+      });
+    }
+  });
+};
+
+/*export const fetchUser = () => (dispatch) => {
+  const {
+    auth,
+    config,
+    singleUserRef
+  } = firebase;
+
+  dispatch({
+    type: FETCH_USER,
+    payload: null
+  });
   onAuthStateChanged(auth, user => {
     if (user) {
       onValue(singleUserRef(user.uid), async snapshot => {
@@ -120,7 +220,7 @@ export const fetchUser = () => (dispatch) => {
       });
     }
   });
-};
+};*/
 
 export const validateReferer = async (referralId) => {
   const {

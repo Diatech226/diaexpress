@@ -1064,6 +1064,7 @@ exports.checksmtpdetails = onRequest(async (request, response) => {
   }
 });
 
+
 exports.check_auth_exists = onRequest(async (request, response) => {
   const db = getDatabase(getApp());
   const settingSnap = await db.ref("settings").once("value");
