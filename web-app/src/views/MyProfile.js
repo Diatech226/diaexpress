@@ -10,7 +10,7 @@ import { makeStyles } from '@mui/styles';
 import AlertDialog from '../components/AlertDialog';
 import { FirebaseContext, api } from 'common';
 import { useTranslation } from "react-i18next";
-import moment from 'moment';
+import moment from 'moment/min/moment-with-locales';
 import CardContent from '@mui/material/CardContent';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';

@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from "react-redux";
 import CircularLoading from "../components/CircularLoading";
 import { api } from 'common';
 import { useTranslation } from "react-i18next";
-import moment from 'moment';
+import moment from 'moment/min/moment-with-locales';
 import {colors} from '../components/Theme/WebTheme';
 import Switch from "@mui/material/Switch";
 import { useNavigate,useLocation } from 'react-router-dom';

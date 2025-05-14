@@ -1,14 +1,9 @@
 {
-  "functions": {
-    "source": "functions",
-    "runtime": "nodejs20",
-    "codebase": "default",
-    "ignore": [
-      "node_modules",
-      ".git",
-      "firebase-debug.log",
-      "firebase-debug.*.log"
-    ]
+  "database": {
+    "rules": "./json/database-rules.json"
+  },
+  "storage": {
+    "rules": "./json/storage.rules"
   },
   "hosting": {
     "public": "web-app/build",
@@ -18,66 +13,17 @@
       "**/node_modules/**"
     ],
     "rewrites": [
-      { "source": "/request_email_otp", "function": "request_email_otp" },
-      { "source": "/verify_email_otp", "function": "verify_email_otp" },
-      { "source": "/get_providers", "function": "get_providers" },
-      { "source": "/send_notification", "function": "send_notification" },
-      { "source": "/check_user_exists", "function": "check_user_exists" },
-      { "source": "/validate_referrer", "function": "validate_referrer" },
-      { "source": "/user_signup", "function": "user_signup" },
-      { "source": "/success", "function": "success" },
-      { "source": "/cancel", "function": "cancel" },
-      { "source": "/paypal-link", "function": "paypal-link" },
-      { "source": "/paypal-process", "function": "paypal-process" },
-      { "source": "/stripe-link", "function": "stripe-link" },
-      { "source": "/stripe-process", "function": "stripe-process" },
-      { "source": "/googleapis-autocomplete", "function": "googleapis-autocomplete" },
-      { "source": "/googleapis-getcoords", "function": "googleapis-getcoords" },
-      { "source": "/googleapis-getaddress", "function": "googleapis-getaddress" },
-      { "source": "/googleapis-getdistancematrix", "function": "googleapis-getdistancematrix" },
-      { "source": "/googleapis-getdirections", "function": "googleapis-getdirections" },
-      { "source": "/test-link", "function": "test-link" },
-      { "source": "/test-process", "function": "test-process" },
-      { "source": "/update_auth_email", "function": "update_auth_email" },
-
-      { "source": "/app-ads.txt", "destination": "/app-ads.txt" },
-
-      { "source": "/dashboard", "destination": "/index.html" },
-      { "source": "/bookings", "destination": "/index.html" },
-      { "source": "/addbookings", "destination": "/index.html" },
-      { "source": "/profile", "destination": "/index.html" },
-      { "source": "/cartypes", "destination": "/index.html" },
-      { "source": "/cancelreasons", "destination": "/index.html" },
-      { "source": "/promos", "destination": "/index.html" },
-      { "source": "/users", "destination": "/index.html" },
-      { "source": "/notifications", "destination": "/index.html" },
-      { "source": "/userwallet", "destination": "/index.html" },
-      { "source": "/addtowallet", "destination": "/index.html" },
-      { "source": "/settings", "destination": "/index.html" },
-      { "source": "/allreports", "destination": "/index.html" },
-      { "source": "/withdraws", "destination": "/index.html" },
-      { "source": "/about-us", "destination": "/index.html" },
-      { "source": "/contact-us", "destination": "/index.html" },
-      { "source": "/privacy-policy", "destination": "/index.html" },
-      { "source": "/cars", "destination": "/index.html" },
-      { "source": "/login", "destination": "/index.html" }
-
- 
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
     ]
   },
-  "emulators": {
-    "auth": { "port": 9099 },
-    "functions": { "port": 5001 },
-    "database": { "port": 9000 },
-    "storage": { "port": 9199 },
-    "ui": {
-      "enabled": true,
-      "port": 9090
-    },
-    "singleProjectMode": true,
-    "hosting": { "port": 5000 }
-  },
-  "remoteconfig": {
-    "template": "remoteconfig.template.json"
+  "functions": {
+    "runtime": "nodejs22",
+    "predeploy": [
+      "npm --prefix \"$RESOURCE_DIR\" run lint"
+    ],
+    "source": "functions"
   }
 }

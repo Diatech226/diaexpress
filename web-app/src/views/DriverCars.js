@@ -4,7 +4,7 @@ import { useParams,useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Typography, Grid, Card, Avatar } from "@mui/material";
 import { colors } from "../components/Theme/WebTheme";
-import moment from "moment";
+import moment from "moment/min/moment-with-locales";
 import { useNavigate } from "react-router-dom";
 import { MAIN_COLOR, SECONDORY_COLOR, FONT_FAMILY } from "../common/sharedFunctions";
 import GoBackButton from "components/GoBackButton";

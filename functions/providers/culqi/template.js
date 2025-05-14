@@ -1,4 +1,4 @@
-function getTemplate(payData, PUBLIC_KEY) {
+function getTemplate(payData,PUBLIC_KEY) {
   return `
   <!doctype html>
   <html>

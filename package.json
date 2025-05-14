@@ -2,7 +2,6 @@
   "name": "exicubeapps",
   "version": "4.6.0",
   "description": "Exicube App Solutions",
-
   "scripts": {
     "app": "yarn workspace mobile-app start",
     "app:publish": "cd mobile-app && eas update",
@@ -14,8 +13,8 @@
     "app:submit": "cd mobile-app && eas submit",
     "web": "yarn workspace web-app start",
     "web:deploy": "yarn workspace web-app build && firebase deploy --only hosting",
-    "deploy": "yarn workspace web-app build && firebase deploy && exicube initialize"
-    
+    "deploy": "yarn workspace web-app build && firebase deploy && exicube initialize",
+    "postinstall": "patch-package && exicube install"
   },
   "workspaces": [
     "mobile-app",

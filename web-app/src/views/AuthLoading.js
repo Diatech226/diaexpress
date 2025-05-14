@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { api } from "common";
 import i18n from "i18next";
 import { useTranslation } from "react-i18next";
-import moment from "moment";
+import moment from "moment/min/moment-with-locales";
 
 function AuthLoading(props) {
   const { t } = useTranslation();

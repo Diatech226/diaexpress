@@ -1,18 +1,18 @@
 function getTemplate(
-    checkout_url, myData,
-) {
-  let htmlForm = `<form action="${checkout_url}" method="post" name="payfast">`;
-  for (const key in myData) {
-    if (Object.prototype.hasOwnProperty.call(myData, key)) {
-      value = myData[key];
-      if (value !== "") {
-        htmlForm +=`<input name="${key}" type="hidden" value="${value.trim()}" />`;
-      }
+    checkout_url, myData
+){
+    let htmlForm = `<form action="${checkout_url}" method="post" name="payfast">`;
+    for (let key in myData) {
+        if (Object.prototype.hasOwnProperty.call(myData, key)){
+            value = myData[key];
+            if (value !== "") {
+                htmlForm +=`<input name="${key}" type="hidden" value="${value.trim()}" />`;
+            }
+        }
     }
-  }
-  htmlForm += "</form>";
+    htmlForm += '</form>'; 
 
-  return `
+    return `
         <html>
         <head>
             <meta charset="utf-8">

@@ -6,7 +6,7 @@ import CircularLoading from "../components/CircularLoading";
 import { api } from "common";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams,useLocation } from "react-router-dom";
-import moment from 'moment';
+import moment from 'moment/min/moment-with-locales';
 import { colors } from "../components/Theme/WebTheme";
 import AlertDialog from "../components/AlertDialog";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";

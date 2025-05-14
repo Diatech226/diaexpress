@@ -11,7 +11,7 @@ import { useSelector } from "react-redux";
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from "react-i18next";
 import { Select, MenuItem  } from '@mui/material';
-import moment from 'moment';
+import moment from 'moment/min/moment-with-locales';
 import EmailIcon from '@mui/icons-material/Email';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import {Typography} from "@mui/material";

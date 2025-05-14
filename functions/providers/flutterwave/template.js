@@ -1,5 +1,5 @@
-function getTemplate(payData, server_url, public_key) {
-  return `
+function getTemplate(payData,server_url,public_key) {
+    return `
         <html>
         <head>
             <meta charset="utf-8" />

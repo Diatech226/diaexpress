@@ -1,3 +1,4 @@
+/*eslint no-unused-vars: "off"*/
 import React, { useState, useEffect, useMemo } from 'react';
 import TextField from '@mui/material/TextField';
 import { Autocomplete } from '@mui/material';
@@ -5,14 +6,16 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
-
+import parse from 'autosuggest-highlight/parse';
 import throttle from 'lodash/throttle';
 import { geocodeByPlaceId } from 'react-places-autocomplete';
 import { useTranslation } from "react-i18next";
-
+import { useSelector } from "react-redux";
+import Box from '@mui/material/Box';
 import { MAIN_COLOR, FONT_FAMILY } from "../common/sharedFunctions";
 import { api } from 'common';
 import uuid from 'react-native-uuid';
+
 
 const useStyles = makeStyles((theme) => ({
   icon: {
@@ -48,18 +51,27 @@ export default function GoogleMapsAutoComplete(props) {
   const [options, setOptions] = useState([]);
   const { t, i18n } = useTranslation();
   const isRTL = i18n.dir() === 'rtl';
+  const settingsdata = useSelector(state => state.settingsdata);
+  const [settings, setSettings] = useState({});
   const {
     fetchPlacesAutocomplete
   } = api;
   const [UUID, setUUID] = useState();
 
-  useEffect(() => {
-    const uuidv4 = uuid.v4();
+  useEffect(()=>{
+    const uuidv4 = uuid.v4()
     setUUID(uuidv4);
     return () => {
       setUUID(null);
     };
-  }, []);
+  },[]);
+
+
+  useEffect(() => {
+    if (settingsdata.settings) {
+      setSettings(settingsdata.settings);
+    }
+  }, [settingsdata.settings]);
 
   const fetch = useMemo(
     () => throttle(async (searchKeyword, callback) => {
@@ -68,7 +80,7 @@ export default function GoogleMapsAutoComplete(props) {
         callback(results || []);
       }
     }, 200),
-    [fetchPlacesAutocomplete, UUID]
+    [fetchPlacesAutocomplete ,UUID]
   );
 
   useEffect(() => {

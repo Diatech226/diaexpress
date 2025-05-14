@@ -1,5 +1,5 @@
-function getTemplate(paytm_checkout_url, paytmParams, checksum) {
-  return `
+function getTemplate(paytm_checkout_url,paytmParams, checksum) {
+    return `
         <html>
         <head>
             <meta charset="utf-8">

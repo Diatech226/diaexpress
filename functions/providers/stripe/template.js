@@ -1,5 +1,5 @@
 function getTemplate(stripe_public_key, sessionId) {
-  return `
+    return `
         <html>
             <head>
             <head> 

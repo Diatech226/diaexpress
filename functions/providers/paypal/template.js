@@ -1,5 +1,5 @@
-function getTemplate(server_url, SB_CLIENT_ID, order_id, amount, currency) {
-  return `
+function getTemplate(server_url,SB_CLIENT_ID,order_id,amount,currency) {
+    return `
         <html>
         <head>
             <meta charset="utf-8">

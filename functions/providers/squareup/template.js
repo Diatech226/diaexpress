@@ -3,9 +3,9 @@ function getTemplate(
     LOCATION_ID,
     order_id,
     amount,
-    currency,
-) {
-  return `
+    currency
+  ) {
+    return `
     <!DOCTYPE html>
     <html>
     <head>
@@ -111,6 +111,6 @@ function getTemplate(
     </body>
     </html>
       `;
-}
-
-module.exports.getTemplate = getTemplate;
+  }
+  
+  module.exports.getTemplate = getTemplate;

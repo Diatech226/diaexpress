@@ -1,5 +1,5 @@
-function getTemplate(apiKeys, orderDetails, signature, responseUrl) {
-  return `
+function getTemplate(apiKeys,orderDetails,signature,responseUrl) {
+    return `
         <html>
         <head>
             <meta charset="utf-8">

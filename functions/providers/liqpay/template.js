@@ -1,5 +1,5 @@
-function getTemplate(base64data, signature) {
-  return `
+function getTemplate(base64data,signature) {
+    return `
         <html>
         <head>
             <meta charset="utf-8">

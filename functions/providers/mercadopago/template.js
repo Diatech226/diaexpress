@@ -1,5 +1,5 @@
 function getTemplate(preference_id, public_key) {
-  return `
+    return `
         <html>
         <head>
             <meta charset="utf-8">

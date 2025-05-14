@@ -36,7 +36,7 @@ export const checkSMTP = async(fromEmail, smtpDetails) => {
     config
   } = firebase;
 
-  let url = `https://checksmtpdetails-uv5fffc44a-uc.a.run.app`;
+  let url = `https://${config.projectId}.web.app/checksmtpdetails`;
 
   const body = { fromEmail: fromEmail, smtpDetails: smtpDetails };
   const response = await fetch(url, {

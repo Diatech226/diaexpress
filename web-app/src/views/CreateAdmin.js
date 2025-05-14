@@ -8,7 +8,7 @@ import {colors} from '../components/Theme/WebTheme';
 import { downloadCsv } from '../common/sharedFunctions';
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { useNavigate,useLocation } from 'react-router-dom';
-import moment from 'moment';
+import moment from 'moment/min/moment-with-locales';
 import {SECONDORY_COLOR } from "../common/sharedFunctions";
 import { ThemeProvider } from '@mui/material/styles';
 import theme from "styles/tableStyle";

@@ -1,5 +1,5 @@
 export const FirebaseConfig = {
-  apiKey: "AIzaSyCPjFn1T33QfGaWylAzPyFZlhHx8n4jbQg",
+  apiKey: "AIzaSyBTKnZs51xii8F7gV3VZtANAxTIL9HM1zM",
   authDomain: "diaapp-bb143.firebaseapp.com",
   projectId: "diaapp-bb143",
   storageBucket: "diaapp-bb143.firebasestorage.app",

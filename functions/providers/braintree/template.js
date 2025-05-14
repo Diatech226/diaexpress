@@ -1,5 +1,5 @@
 function getTemplate(token, order_id, amount, currency) {
-  return `
+    return `
         <html>
         <head>
             <meta charset="utf-8">

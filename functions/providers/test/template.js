@@ -1,8 +1,8 @@
 function getTemplate(
     order_id,
-    amount,
-) {
-  return `
+    amount
+){
+    return `
         <html>
         <head>
             <meta charset="utf-8">

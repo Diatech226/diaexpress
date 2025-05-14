@@ -6,30 +6,8 @@
   "plugins": [
     "promise"
   ],
-  "extends":  [
-    "eslint:recommended",
-    "google"
-  ],
+  "extends": "eslint:recommended",
   "rules": {
-   "max-len": "off",
-    "camelcase": "off",
-    "quotes": "off",
-    "indent": "off",
-    "new-cap": "off",
-    "comma-spacing": "off",
-    "keyword-spacing": "off",
-    "space-before-blocks": "off",
-    "require-jsdoc": "off",
-    "object-curly-spacing": "off",
-    "no-var": "off",
-    "semi": "off",
-    "arrow-parens": "off",
-    "space-before-function-paren": "off",
-    "no-trailing-spaces": "off",
-    "eol-last": "off",
-    "guard-for-in": "off" ,
-   
-  
     // Removed rule "disallow the use of console" from recommended eslint rules
     "no-console": "off",
 
