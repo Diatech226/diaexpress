@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "384215342468",
+    "firebase_url": "https://diaapp-bb143-default-rtdb.firebaseio.com",
     "project_id": "diaapp-bb143",
     "storage_bucket": "diaapp-bb143.firebasestorage.app"
   },
@@ -22,20 +23,20 @@
           }
         },
         {
-          "client_id": "384215342468-e0pfg1vmuqs49oec5mbuqh21oe856mml.apps.googleusercontent.com",
+          "client_id": "384215342468-l6gvvq7eit27v4e833v4cifh73df7pab.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBTKnZs51xii8F7gV3VZtANAxTIL9HM1zM"
+          "current_key": "AIzaSyDWAZXKPmlMHVdMwCS0EpS-38i2tjR314Y"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "384215342468-e0pfg1vmuqs49oec5mbuqh21oe856mml.apps.googleusercontent.com",
+              "client_id": "101601381277515554812",
               "client_type": 3
             },
             {

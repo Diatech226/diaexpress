@@ -90,7 +90,8 @@ export const fetchUser = () => (dispatch) => {
 
           const settings = store.getState().settingsdata.settings;
           let host = window && window.location && settings.CompanyWebsite === window.location.origin? window.location.origin : `https://${config.projectId}.web.app`
-          let url = `${host}/check_auth_exists`;
+          
+         let url = `${host}/check_auth_exists`;
           const response = await fetch(url, {
             method: 'POST',
             headers: {
@@ -146,8 +147,8 @@ export const checkUserExists = async (data) => {
   } = firebase;
 
   const settings = store.getState().settingsdata.settings;
-  let host = window && window.location && settings.CompanyWebsite === window.location.origin? window.location.origin : `https://${config.projectId}.web.app` || `http://localhost:3000`
-  let url = `${host}/check_user_exists`;
+  /*let host = window && window.location && settings.CompanyWebsite === window.location.origin? window.location.origin : `https://${config.projectId}.web.app` || `http://localhost:3000`*/
+  let url = `https://us-central1-${config.projectId}.cloudfunctions.net/check_user_exists`; /*`${host}/check_user_exists`;*/
   const response = await fetch(url, {
     method: 'POST',
     headers: {

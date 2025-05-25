@@ -1031,76 +1031,46 @@ exports.checksmtpdetails = onRequest(async(request, response) => {
         response.send({ error: error.toString() })
     }
 }); 
-/*
-exports.check_auth_exists = onRequest(async (request, response) => {
-    const db = getDatabase()
-    let settingdata = await db.ref('settings').once("value");
-    let settings = settingdata.val();
-    const allowedOrigins = ['https://' + config.firebaseProjectId + '.web.app', settings.CompanyWebsite];
-    const origin = request.headers.origin;
-    if (allowedOrigins.includes(origin)) {
-        response.set("Access-Control-Allow-Origin", origin);
-    }
-    response.set("Access-Control-Allow-Headers", "Content-Type");
-    let data = JSON.parse(request.body.data);
-    const userData = await rgf.formatUserProfile(request, config, data);
-    if(userData.uid){
-        db.ref('users/' + userData.uid).set(userData);
-    }
-    response.send(userData)
-});
-
-*/
 exports.check_auth_exists = onRequest(async (request, response) => {
     const db = getDatabase();
-
-    // Récupération des paramètres de configuration
     let settingdata = await db.ref('settings').once("value");
     let settings = settingdata.val();
 
-    // Définition des origines autorisées
     const allowedOrigins = [
-        'https://' + process.env.GCLOUD_PROJECT + '.web.app',
+        'https://' + config.firebaseProjectId + '.web.app',
         settings.CompanyWebsite,
-        'https://dia-express.com',        // Origine de votre site
-        'https://www.dia-express.com',    // Variante avec "www"
-        'http://localhost:3000'           // Pour les tests en local
+        'http://localhost:3000'
     ];
-
     const origin = request.headers.origin;
 
-    // Vérification de l'origine et ajout des en-têtes CORS
     if (allowedOrigins.includes(origin)) {
         response.set("Access-Control-Allow-Origin", origin);
-        response.set("Vary", "Origin");  // Permet de gérer plusieurs origines
+        response.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+        response.set("Access-Control-Allow-Methods", "POST, OPTIONS");
     }
 
-    // Gestion de la méthode OPTIONS (pré-vol CORS)
-    if (request.method === "OPTIONS") {
-        response.set("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
-        response.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
-        response.set("Access-Control-Max-Age", "3600");
-        response.status(204).send("");  // Réponse vide pour les requêtes pré-vol
+    if (request.method === 'OPTIONS') {
+        response.status(204).send('');
         return;
     }
 
+    let data;
     try {
-        // Récupération des données envoyées
-        let data = JSON.parse(request.body.data);
-        const userData = await rgf.formatUserProfile(request, config, data);
-
-        if (userData.uid) {
-            // Enregistrement des données dans la base
-            await db.ref('users/' + userData.uid).set(userData);
-        }
-
-        // Réponse avec les données de l'utilisateur
-        response.status(200).send(userData);
-    } catch (error) {
-        // Gestion des erreurs
-        response.status(500).send({ error: "Internal Server Error", details: error.message });
+        data = JSON.parse(request.body.data);
+    } catch (err) {
+        response.status(400).send({ error: 'Invalid JSON' });
+        return;
     }
+
+    const userData = await rgf.formatUserProfile(request, config, data);
+    if (userData.uid) {
+        await db.ref('users/' + userData.uid).set(userData);
+    }
+
+    response.send(userData);
 });
+
+
 
 exports.request_mobile_otp = onRequest(async (request, response) => {
     const db = getDatabase();
