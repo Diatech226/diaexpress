@@ -14,7 +14,8 @@
     ],
     "rewrites": [
       
-         { "source": "/", "destination": "/index.html" },
+        
+         { "source": "/*", "destination": "/index.html" },
       { "source": "/dashboard", "destination": "/index.html" },
       { "source": "/bookings", "destination": "/index.html" },
       { "source": "/addbookings", "destination": "/index.html" },
@@ -114,8 +115,8 @@
       {"source": "/cartypes/editcartype", "destination":"/index.html" },
       { "source": "/cartypes/editcartype/**", "destination": "/index.html" },
       {"source": "/users/edituser/**", "destination":"/index.html" },
-      { "source": "/users/edituser/**/**", "destination": "/index.html" },
-      { "source": "/*", "destination": "/index.html" }
+      { "source": "/users/edituser/**/**", "destination": "/index.html" }
+      
       
     ]
   },
