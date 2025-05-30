@@ -1,4 +1,3 @@
-/*eslint no-unused-vars: "off"*/
 import React, { useState, useEffect, useMemo } from 'react';
 import TextField from '@mui/material/TextField';
 import { Autocomplete } from '@mui/material';
@@ -80,7 +79,7 @@ export default function GoogleMapsAutoComplete(props) {
         callback(results || []);
       }
     }, 200),
-    [fetchPlacesAutocomplete ,UUID]
+    [fetchPlacesAutocomplete]
   );
 
   useEffect(() => {
