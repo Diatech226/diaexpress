@@ -1,1 +1,1 @@
-export const webClientId = '101601381277515554812'
+export const webClientId = '384215342468-l6gvvq7eit27v4e833v4cifh73df7pab.apps.googleusercontent.com'
