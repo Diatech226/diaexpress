@@ -3,19 +3,19 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>384215342468-ni87b4mv2le28hmsu3vij04j665viftf.apps.googleusercontent.com</string>
+	<string>384215342468-4ufpik72lm3i5ei7an8i0aqomhjqd3jr.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.384215342468-ni87b4mv2le28hmsu3vij04j665viftf</string>
+	<string>com.googleusercontent.apps.384215342468-4ufpik72lm3i5ei7an8i0aqomhjqd3jr</string>
 	<key>ANDROID_CLIENT_ID</key>
-	<string>384215342468-u76233gnir6dmfntcpst4ah37ae4voaf.apps.googleusercontent.com</string>
+	<string>384215342468-b7mom8hmvql4509u0q947vu726pcmndv.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
-	<string>AIzaSyCAH0ck1U8MO4z6Xn7_d3RnaltCSfRUvWE</string>
+	<string>AIzaSyCGEpmWA2yUbxSsepI-1hIm-ujF3NfdpvQ</string>
 	<key>GCM_SENDER_ID</key>
 	<string>384215342468</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.dia.com</string>
+	<string>com.dia.app</string>
 	<key>PROJECT_ID</key>
 	<string>diaapp-bb143</string>
 	<key>STORAGE_BUCKET</key>
@@ -31,6 +31,8 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:384215342468:ios:f66994c21bf7e26617d1d1</string>
+	<string>1:384215342468:ios:b23df8f14bcc057717d1d1</string>
+	<key>DATABASE_URL</key>
+	<string>https://diaapp-bb143-default-rtdb.firebaseio.com</string>
 </dict>
 </plist>

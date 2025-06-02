@@ -1031,45 +1031,24 @@ exports.checksmtpdetails = onRequest(async(request, response) => {
         response.send({ error: error.toString() })
     }
 }); 
+
 exports.check_auth_exists = onRequest(async (request, response) => {
-    const db = getDatabase();
+    const db = getDatabase()
     let settingdata = await db.ref('settings').once("value");
     let settings = settingdata.val();
-
-    const allowedOrigins = [
-        'https://' + config.firebaseProjectId + '.web.app',
-        settings.CompanyWebsite,
-        'http://localhost:3000'
-    ];
+    const allowedOrigins = ['https://' + config.firebaseProjectId + '.web.app', settings.CompanyWebsite];
     const origin = request.headers.origin;
-
     if (allowedOrigins.includes(origin)) {
         response.set("Access-Control-Allow-Origin", origin);
-        response.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
-        response.set("Access-Control-Allow-Methods", "POST, OPTIONS");
     }
-
-    if (request.method === 'OPTIONS') {
-        response.status(204).send('');
-        return;
-    }
-
-    let data;
-    try {
-        data = JSON.parse(request.body.data);
-    } catch (err) {
-        response.status(400).send({ error: 'Invalid JSON' });
-        return;
-    }
-
+    response.set("Access-Control-Allow-Headers", "Content-Type");
+    let data = JSON.parse(request.body.data);
     const userData = await rgf.formatUserProfile(request, config, data);
-    if (userData.uid) {
-        await db.ref('users/' + userData.uid).set(userData);
+    if(userData.uid){
+        db.ref('users/' + userData.uid).set(userData);
     }
-
-    response.send(userData);
+    response.send(userData)
 });
-
 
 
 exports.request_mobile_otp = onRequest(async (request, response) => {
